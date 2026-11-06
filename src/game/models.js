@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 const mats = {};
 const mat = (c, opts = {}) => {
@@ -80,6 +81,8 @@ export function makeDanfo() {
 }
 
 // ---------- Person (faces +z), jointed so arms and legs can swing ----------
+// Every person made, so the real character models can replace the simple ones once loaded
+export const PEOPLE = [];
 export function makePerson(o = {}) {
   const SKIN = o.skin ?? 0x8d5524, TOP = o.top ?? 0x1e88e5, BOTTOM = o.bottom ?? 0x2b3a67;
   const HAIR = o.hair ?? 0x15110e, SHOE = o.shoe ?? 0xf2f2f2, female = !!o.female;
@@ -111,6 +114,9 @@ export function makePerson(o = {}) {
   p.userData.legL = limb(-0.17, 1.05, 0.26, 1.05, 0.28, BOTTOM, SHOE, 0.2);
   p.userData.legR = limb(0.17, 1.05, 0.26, 1.05, 0.28, BOTTOM, SHOE, 0.2);
   p.userData.phase = Math.random() * 6;
+  // Fewer draw calls: merge each body part's pieces that share a colour
+  [p, p.userData.armL, p.userData.armR, p.userData.legL, p.userData.legR].forEach(mergeChildren);
+  PEOPLE.push({ group: p, opts: o });
   return p;
 }
 
@@ -123,20 +129,34 @@ export function makePlayer(scene) {
 // Call every frame; `speed` is 0..1 of walking pace. Standing people (speed 0) get a gentle idle sway.
 export function animatePlayer(p, speed, dt) {
   const u = p.userData;
+  if (u.char) { u.char.setMove(speed); u.char.update(dt); return; }
   u.phase += dt * 10 * Math.max(speed, 0.0);
   const s = Math.sin(u.phase) * 0.8 * speed;
   u.legL.rotation.x = s; u.legR.rotation.x = -s;
   u.armL.rotation.x = -s * 0.9; u.armR.rotation.x = s * 0.9;
-  p.children[0].position.y = 1.4;                                    // torso stays put
   p.position.y = Math.abs(Math.sin(u.phase)) * 0.05 * speed;
 }
 
 // Standing person chatting: small arm gestures
-export function animateIdle(p, t) {
+export function animateIdle(p, t, dt = 0.016) {
   const u = p.userData, k = t + u.phase;
+  if (u.char) { u.char.setMove(0); u.char.update(dt); return; }
   u.armR.rotation.x = -0.5 + Math.sin(k * 2.2) * 0.35;
   u.armL.rotation.x = Math.sin(k * 0.9) * 0.08;
   u.legL.rotation.x = u.legR.rotation.x = 0;
 }
 
 export { box as _box, mat as _mat };
+
+function mergeChildren(group) {
+  const by = new Map(), gone = [];
+  for (const o of group.children) {
+    if (!o.isMesh) continue;
+    o.updateMatrix();
+    const g = o.geometry.clone().applyMatrix4(o.matrix), f = g.index ? g.toNonIndexed() : g;
+    for (const k of Object.keys(f.attributes)) if (!['position', 'normal', 'uv'].includes(k)) f.deleteAttribute(k);
+    (by.get(o.material) || by.set(o.material, []).get(o.material)).push(f); gone.push(o);
+  }
+  gone.forEach(o => group.remove(o));
+  for (const [m, gs] of by) group.add(new THREE.Mesh(mergeGeometries(gs, false), m));
+}

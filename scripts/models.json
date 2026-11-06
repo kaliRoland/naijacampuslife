@@ -1,0 +1,85 @@
+{
+  "ground/grass-large": {
+    "src": "kenney_nature-kit/Models/GLTF format/grass_large.glb"
+  },
+  "ground/grass-leafs": {
+    "src": "kenney_nature-kit/Models/GLTF format/grass_leafsLarge.glb"
+  },
+  "ground/flower-red": {
+    "src": "kenney_nature-kit/Models/GLTF format/flower_redA.glb"
+  },
+  "ground/flower-yellow": {
+    "src": "kenney_nature-kit/Models/GLTF format/flower_yellowA.glb"
+  },
+  "ground/flower-purple": {
+    "src": "kenney_nature-kit/Models/GLTF format/flower_purpleA.glb"
+  },
+  "ground/bush": {
+    "src": "kenney_nature-kit/Models/GLTF format/plant_bush.glb"
+  },
+  "ground/bush-large": {
+    "src": "kenney_nature-kit/Models/GLTF format/plant_bushLarge.glb"
+  },
+  "ground/rock-a": {
+    "src": "kenney_nature-kit/Models/GLTF format/rock_smallA.glb"
+  },
+  "ground/rock-b": {
+    "src": "kenney_nature-kit/Models/GLTF format/rock_smallC.glb"
+  },
+  "trees/palm-tall": {
+    "src": "kenney_nature-kit/Models/GLTF format/tree_palmTall.glb"
+  },
+  "trees/palm-detailed": {
+    "src": "kenney_nature-kit/Models/GLTF format/tree_palmDetailedTall.glb"
+  },
+  "trees/palm-short": {
+    "src": "kenney_nature-kit/Models/GLTF format/tree_palmShort.glb"
+  },
+  "trees/oak": {
+    "src": "kenney_nature-kit/Models/GLTF format/tree_oak.glb"
+  },
+  "trees/fat": {
+    "src": "kenney_nature-kit/Models/GLTF format/tree_fat.glb"
+  },
+  "buildings/lecture": {
+    "src": "kenney_city-kit-commercial_2.1/Models/GLB format/building-k.glb"
+  },
+  "buildings/admin": {
+    "src": "kenney_city-kit-commercial_2.1/Models/GLB format/building-i.glb"
+  },
+  "buildings/library": {
+    "src": "kenney_city-kit-commercial_2.1/Models/GLB format/building-e.glb"
+  },
+  "buildings/hostel": {
+    "src": "kenney_city-kit-commercial_2.1/Models/GLB format/building-j.glb"
+  },
+  "buildings/block-a": {
+    "src": "kenney_city-kit-commercial_2.1/Models/GLB format/building-c.glb"
+  },
+  "buildings/block-b": {
+    "src": "kenney_city-kit-commercial_2.1/Models/GLB format/building-a.glb"
+  },
+  "props/awning": {
+    "src": "kenney_city-kit-commercial_2.1/Models/GLB format/detail-awning-wide.glb"
+  },
+  "props/parasol": {
+    "src": "kenney_city-kit-commercial_2.1/Models/GLB format/detail-parasol-a.glb"
+  },
+  "vehicles/danfo": {
+    "src": "_work/danfo.glb"
+  },
+  "characters/male": {
+    "src": "_work/male.glb",
+    "keepNodes": true,
+    "textureSize": 128
+  },
+  "characters/female": {
+    "src": "_work/female.glb",
+    "keepNodes": true,
+    "textureSize": 128
+  },
+  "characters/anims": {
+    "src": "_work/anims.glb",
+    "keepNodes": true
+  }
+}

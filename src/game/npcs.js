@@ -52,6 +52,7 @@ export function createNPCs(scene) {
     const cx = group.reduce((a, g) => a + g[0], 0) / group.length, cz = group.reduce((a, g) => a + g[1], 0) / group.length;
     group.forEach(([x, z]) => {
       const p = spawn(scene, ++i, x, z);
+      p.userData.talk = true;                                  // chatting people play the talking animation
       p.rotation.y = Math.atan2(cx - x, cz - z);
       people.push({ obj: p, kind: 'idle' });
     });
@@ -66,7 +67,7 @@ export function createNPCs(scene) {
 export function updateNPCs(dt, t) {
   for (const n of people) {
     const o = n.obj;
-    if (n.kind === 'idle') { animateIdle(o, t); continue; }
+    if (n.kind === 'idle') { animateIdle(o, t, dt); continue; }
     const target = n.route[n.leg + n.dir] ?? n.route[n.leg];
     const dx = target[0] - o.position.x, dz = target[1] - o.position.z, d = Math.hypot(dx, dz);
     if (d < 0.3) {

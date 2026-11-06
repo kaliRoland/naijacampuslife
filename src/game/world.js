@@ -29,7 +29,8 @@ const sign = (text, sub, w, h, bg, fg, parent, x, y, z, ry = 0) => {
 };
 
 // Building with a window-grid facade on the +z (front) face
-function building(w, h, d, wall, roof, floors, cols, x, z, parent, label) {
+const buildingList = [], treeSpots = [], flowerSpots = [];
+function building(id, w, h, d, wall, roof, floors, cols, x, z, parent, label) {
   const tex = textTexture(512, 256, (g, W, H) => {
     g.fillStyle = '#' + wall.toString(16).padStart(6, '0'); g.fillRect(0, 0, W, H);
     const cw = W / cols, rh = H / floors;
@@ -39,16 +40,19 @@ function building(w, h, d, wall, roof, floors, cols, x, z, parent, label) {
       g.fillStyle = '#b9b2a0'; g.fillRect(c * cw + cw * 0.18, r * rh + rh * 0.77, cw * 0.64, rh * 0.06);
     }
   });
+  const parts = new THREE.Group(); parent.add(parts);
   const side = mat(wall);
   const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), [side, side, side, side, new THREE.MeshLambertMaterial({ map: tex }), side]);
-  m.position.set(x, h / 2, z); parent.add(m);
-  box(w + 1, 0.8, d + 1, roof, x, h, z, parent);
-  box(w + 0.4, 0.5, d + 0.4, 0x6d6a60, x, 0, z, parent);
-  box(3, 3, 0.6, 0x3b2f2a, x, 0, z + d / 2 + 0.1, parent);                          // door
-  box(5, 0.4, 2, roof, x, 3.2, z + d / 2 + 0.9, parent);                            // porch roof
-  for (const s of [-2.2, 2.2]) box(0.4, 3.2, 0.4, 0xeeeae0, x + s, 0, z + d / 2 + 1.6, parent);
-  if (label) sign(label, null, Math.min(w * 0.7, 12), 1.6, '#0b3d2e', '#f2c94c', parent, x, h - 1.2, z + d / 2 + 0.06);
+  m.position.set(x, h / 2, z); parts.add(m);
+  box(w + 1, 0.8, d + 1, roof, x, h, z, parts);
+  box(w + 0.4, 0.5, d + 0.4, 0x6d6a60, x, 0, z, parts);
+  box(3, 3, 0.6, 0x3b2f2a, x, 0, z + d / 2 + 0.1, parts);                          // door
+  box(5, 0.4, 2, roof, x, 3.2, z + d / 2 + 0.9, parts);                            // porch roof
+  for (const s of [-2.2, 2.2]) box(0.4, 3.2, 0.4, 0xeeeae0, x + s, 0, z + d / 2 + 1.6, parts);
+  const signMesh = label && sign(label, null, Math.min(w * 0.7, 12), 1.6, '#0b3d2e', '#f2c94c', parent, x, h - 1.2, z + d / 2 + 0.06);
   solid(x, z, w + 1, d + 1);
+  const info = { id, x, z, w, h, d, parts, sign: signMesh };
+  buildingList.push(info); return info;
 }
 
 const tree = (x, z, parent, s = 1) => {
@@ -80,11 +84,12 @@ const ironGate = (x, z, w, parent) => {                    // sliding iron gate 
 export function buildWorld(scene) {
   scene.background = new THREE.Color(0x9fd3f0);
   scene.fog = new THREE.Fog(0x9fd3f0, 45, 120);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x556b55, 1.1));
-  const sun = new THREE.DirectionalLight(0xfff2cc, 1.2); sun.position.set(30, 50, 20); scene.add(sun);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x6b7f5b, 1.7));
+  const sun = new THREE.DirectionalLight(0xfff2cc, 1.5); sun.position.set(30, 50, 20); scene.add(sun);
 
   const g = new THREE.Group(); scene.add(g);
   const STONE = 0xe8e0cc, GREEN = 0x0b3d2e, GOLD = 0xf2c94c;
+  const treesG = new THREE.Group(), flowersG = new THREE.Group(), awningG = new THREE.Group(); g.add(treesG, flowersG, awningG);
 
   // ---- Ground ----
   box(240, 0.2, 240, 0x6aa84f, 0, -0.2, 0, g);                       // grass
@@ -123,8 +128,8 @@ export function buildWorld(scene) {
     for (let i = 0; i < 6; i++) box(1, 3.7, 1.4, STONE, s * (10 + i * 10), 0, 0, g);
   }
   // Welcome banner stand on the pavement and signboard
-  for (const s of [-1, 1]) box(0.25, 4.5, 0.25, 0x333333, s * 6, 0, 17, g);
-  sign('WELCOME, FRESHERS!', 'Registration is open at the Admin Block', 12, 2, '#8b1e1e', '#ffffff', g, 0, 4, 17.2);
+  for (const s of [-1, 1]) box(0.25, 8.6, 0.25, 0x333333, s * 6, 0, 17, g);
+  sign('WELCOME, FRESHERS!', 'Registration is open at the Admin Block', 12, 2, '#8b1e1e', '#ffffff', g, 0, 7.4, 17.2);
   sign("LION'S DEN UNIVERSITY", 'All visitors report to security', 4.5, 2.2, '#f5f1e6', '#0b3d2e', g, -9, 2.6, 10);
   box(0.2, 1.4, 0.2, 0x333333, -9, 0, 9.95, g);
   // Guard house + boom barrier
@@ -135,11 +140,13 @@ export function buildWorld(scene) {
   const boom = box(5, 0.18, 0.18, 0xffffff, 9.9, 2.4, 7, g); boom.rotation.z = 0.5;      // raised barrier
 
   // ---- Inside the campus ----
-  building(20, 9, 12, 0xc9bda3, GREEN, 2, 6, -22, -32, g, 'LECTURE THEATRE');
-  building(20, 11, 12, 0xd6cdb6, 0x8b1e1e, 3, 6, 22, -32, g, 'ADMIN BLOCK');
-  building(26, 8, 12, 0xcbc2aa, GREEN, 2, 8, 0, -58, g, 'UNIVERSITY LIBRARY');
-  building(14, 7, 9, 0xbfb7a0, GREEN, 2, 4, -42, -14, g, null);
-  building(14, 7, 9, 0xbfb7a0, GREEN, 2, 4, 42, -14, g, null);
+  building('lecture', 20, 9, 12, 0xc9bda3, GREEN, 2, 6, -22, -32, g, 'LECTURE THEATRE');
+  building('admin', 20, 11, 12, 0xd6cdb6, 0x8b1e1e, 3, 6, 22, -32, g, 'ADMIN BLOCK');
+  building('library', 26, 8, 12, 0xcbc2aa, GREEN, 2, 8, 0, -58, g, 'UNIVERSITY LIBRARY');
+  building('block-a', 14, 7, 9, 0xbfb7a0, GREEN, 2, 4, -42, -14, g, null);
+  building('block-b', 14, 7, 9, 0xbfb7a0, GREEN, 2, 4, 42, -14, g, null);
+
+  building('hostel', 18, 12, 11, 0xd8d2c4, 0x8b1e1e, 3, 6, -50, -40, g, 'HOSTEL BLOCK A');
 
   // Fountain with lion statue on the avenue
   const f = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.8, 0.8, 16), mat(0xaaa59a)); f.position.set(0, 0.4, -20); g.add(f);
@@ -154,12 +161,12 @@ export function buildWorld(scene) {
   for (const [x, z] of [[-8.5, -6], [8.5, -6], [-8.5, -12], [8.5, -12], [-9, 14], [9, 14]]) {
     box(3, 0.4, 3, 0x6b5a45, x, 0, z, g);
     for (const [dx, dz, c] of [[-0.8, -0.8, 0xe53935], [0.8, -0.8, 0xfdd835], [0, 0.6, 0xec407a], [-0.7, 0.8, 0xfdd835], [0.8, 0.7, 0xe53935]])
-      box(0.5, 0.5, 0.5, c, x + dx, 0.4, z + dz, g);
+      { box(0.5, 0.5, 0.5, c, x + dx, 0.4, z + dz, flowersG); flowerSpots.push([x + dx, z + dz, c]); }
   }
   // Lamps with green flags along the avenue
   for (let z = 10; z > -50; z -= 12) { lamp(-6.5, z, g, true); lamp(6.5, z, g, false); }
   // Trees and benches
-  for (const [x, z] of [[-14, 12], [16, 14], [-30, 14], [28, 8], [16, -8], [-14, -44], [14, -44], [-34, -34], [34, -48], [-32, -50], [-48, 6], [50, 4]]) tree(x, z, g);
+  for (const [x, z] of [[-14, 12], [16, 14], [-30, 14], [28, 8], [16, -8], [-14, -44], [14, -44], [-34, -34], [34, -48], [-32, -50], [-48, 6], [50, 4]]) { treeSpots.push([x, z]); tree(x, z, treesG); }
   for (const [x, z, r] of [[-9, -26, Math.PI / 2], [9, -26, -Math.PI / 2], [-9, -40, Math.PI / 2], [9, -40, -Math.PI / 2]]) bench(x, z, r, g);
 
   // ---- Registration desk under a canopy (Week 2) ----
@@ -180,7 +187,7 @@ export function buildWorld(scene) {
   box(5.6, 0.3, 2.6, 0x1b4f63, -14, 3.6, -9.2, g);                        // roof
   box(5.2, 0.9, 0.8, 0x8d6e63, -14, 0, -6.7, g);                          // counter
   box(5.3, 0.08, 0.9, 0xd7ccc8, -14, 0.9, -6.7, g);
-  for (let i = 0; i < 6; i++) box(0.9, 0.15, 1.1, i % 2 ? 0xffffff : 0xd32f2f, -16.2 + i * 0.88, 3.0, -5.9, g).rotation.x = -0.25;  // striped awning
+  for (let i = 0; i < 6; i++) box(0.9, 0.15, 1.1, i % 2 ? 0xffffff : 0xd32f2f, -16.2 + i * 0.88, 3.0, -5.9, awningG).rotation.x = -0.25;  // striped awning
   sign('SUPPLIES KIOSK', "Aunty Ngozi's · Photos · Copies · Zobo", 4.8, 0.95, '#1b4f63', '#ffffff', g, -14, 2.7, -8.12);
   for (const [dx, c, h] of [[-1.8, 0xffeb3b, 0.35], [-1.2, 0xe53935, 0.5], [-0.6, 0x43a047, 0.3], [0, 0xffffff, 0.2], [0.6, 0x8e24aa, 0.45], [1.2, 0xff9800, 0.3], [1.8, 0x1e88e5, 0.4]])
     box(0.4, h, 0.4, c, -14 + dx, 0.98, -6.75, g);                        // goods on the counter
@@ -190,5 +197,6 @@ export function buildWorld(scene) {
   scene.add(bus);
   bus.position.set(-90, 0, 27);
 
-  return { bus, colliders };
+  bus.userData.collide = { minX: -5.2, maxX: 7.8, halfZ: 2.4 };   // replaced when the real model loads
+  return { bus, colliders, buildingList, treeSpots, flowerSpots, treesG, flowersG, awningG, group: g };
 }

@@ -10,6 +10,7 @@ import { initPhone } from './game/phone.js';
 import { startDialogue, isTalking } from './game/dialogue.js';
 import { STARTING_ALLOWANCE, TEXT, GATE_CHOICE } from './data/story.js';
 import { CATEGORIES } from './data/prices.js';
+import { loadAllModels, applyModels } from './game/upgrade.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('game');
@@ -17,7 +18,8 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPrefer
 renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 200);
-const { bus, colliders } = buildWorld(scene);
+const world = buildWorld(scene);
+const { bus, colliders } = world;
 createNPCs(scene);
 createInteractables(scene);
 const player = makePlayer(scene);
@@ -72,6 +74,25 @@ document.addEventListener('inventory', updateObjective);
     box.appendChild(e);
   }
 }
+
+// ---- Load the 3D models while the landing page shows; Start unlocks when ready ----
+{
+  const btn = $('startBtn'), label = btn.querySelector('span'), ready = label.textContent;
+  btn.disabled = true;
+  const show = (d, t) => { label.textContent = t ? `Loading ${Math.round((d / t) * 100)}%` : 'Loading...'; };
+  show(0, 0);
+  loadAllModels(show)
+    .then(() => applyModels({ scene, world }))
+    .catch(e => console.warn('Model upgrade skipped:', e))
+    .finally(() => { label.textContent = ready; btn.disabled = false; });
+}
+
+// ---- ?debug shows frame rate, draw calls and triangles ----
+const debugBox = new URLSearchParams(location.search).has('debug') ? document.body.appendChild(Object.assign(document.createElement('div'), {
+  style: 'position:fixed;left:8px;bottom:8px;z-index:99;background:#000b;color:#7CFC00;font:12px monospace;padding:6px 8px;border-radius:6px;white-space:pre;pointer-events:none',
+})) : null;
+let dbgFrames = 0, dbgT = performance.now();
+if (debugBox) window.__ncl = { player, camera, input, scene, renderer, bus, world };
 
 $('startBtn').onclick = () => {
   $('start').classList.add('leaving');
@@ -147,7 +168,8 @@ function frame() {
   if (hit(nx, player.position.z)) nx = player.position.x;
   if (hit(nx, nz)) nz = player.position.z;
   // Bus is solid
-  if (nx > bus.position.x - 5.2 && nx < bus.position.x + 7.8 && Math.abs(nz - bus.position.z) < 2.4) { nx = player.position.x; nz = player.position.z; }
+  const bc = bus.userData.collide;
+  if (nx > bus.position.x + bc.minX && nx < bus.position.x + bc.maxX && Math.abs(nz - bus.position.z) < bc.halfZ) { nx = player.position.x; nz = player.position.z; }
   const moved = Math.hypot(nx - player.position.x, nz - player.position.z);
   if (moved > 0) {
     const target = Math.atan2(nx - player.position.x, nz - player.position.z);
@@ -170,6 +192,13 @@ function frame() {
   camera.lookAt(player.position.x, 1.6, player.position.z);
 
   if (state !== 'intro') renderer.render(scene, camera);   // no need to draw behind the landing page
+  if (debugBox && ++dbgFrames >= 30) {
+    const now = performance.now(), i = renderer.info.render;
+    debugBox.textContent = `${Math.round(dbgFrames * 1000 / (now - dbgT))} fps
+${i.calls} draw calls
+${(i.triangles / 1000).toFixed(1)}k triangles`;
+    dbgFrames = 0; dbgT = now;
+  }
   requestAnimationFrame(frame);
 }
 frame();

@@ -29,6 +29,18 @@ Playable MVP, "The First Week at Lion's Den", about 45-60 minutes of play, by we
 - **No loot boxes or paid random rewards. Never sell grades or guaranteed success.**
 - Keep the codebase simple: plain JavaScript modules, no heavy frameworks, small dependencies.
 
+## Art standards
+
+- **Sources:** free, commercially usable packs only. Kenney.nl and Quaternius (both CC0). Poly Pizza only for models marked CC0 or CC-BY. No other sources without asking Roland.
+- **Record everything:** every asset's source, author and licence goes in `ASSETS.md`, with attribution where the licence requires it. Read the licence on the pack's own page or `License.txt`; do not assume.
+- **Format:** GLB (glTF), loaded with Three.js `GLTFLoader` through `src/game/assets.js`. Compress with meshopt (via `gltf-transform`). Textures 1024px or smaller.
+- **Budget:** characters a few thousand triangles at most; props much less. Total first load stays under 20-30MB. Reuse and instance repeated models (trees, fences, kiosks): use `instanceModel()` for repeats.
+- **Raw packs** live in `art-source/` (git-ignored). Only optimised files go in `public/models/`.
+- **Never break the game:** if a model fails to load, keep the simple built-in version. Show loading progress on the landing page.
+- **Performance:** must run smoothly on a mid-range Android phone. Check the build size, draw calls and frame rate (`?debug` in the URL) before calling art work done, and report the numbers.
+- **Fiction only:** no real brand names, logos or signage on any model or texture. Signs are our own text banners.
+- **Don't replace what has no good model:** if no pack has a fitting model (kiosk, fountain, bench), keep our own simple model rather than forcing a bad one.
+
 ## Core systems
 
 1. **Wallet:** live balance on the in-game phone. Allowances, business profits and tips come in; fees, food, parties, scams and theft go out. Every transaction is logged with time, amount, reason and balance.
