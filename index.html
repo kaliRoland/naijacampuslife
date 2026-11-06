@@ -8,6 +8,11 @@
 <link rel="icon" href="/icon.svg" type="image/svg+xml" />
 <title>Naija Campus Life: Into the Wolves</title>
 <link rel="stylesheet" href="/src/style.css" />
+<link rel="stylesheet" href="/src/landing.css" />
+<link rel="preload" as="image" href="/logo.jpg" />
+<meta property="og:title" content="Naija Campus Life: Into the Wolves" />
+<meta property="og:description" content="Learn, Grow, Survive. A 3D Lagos campus life thriller." />
+<meta property="og:image" content="/logo.jpg" />
 </head>
 <body>
 <canvas id="game"></canvas>
@@ -36,13 +41,26 @@
 </div>
 
 <div id="start">
-  <div class="card">
-    <h1>Naija Campus Life</h1>
-    <h2>Into the Wolves</h2>
-    <p>Lion's Den University, Lagos. Your first day.</p>
-    <button id="startBtn">Start</button>
-    <small>Move: WASD / arrows, or the on-screen stick. Look: drag.</small>
-  </div>
+  <div class="bg-glow"></div>
+  <div class="bg-grid"></div>
+  <div id="embers" aria-hidden="true"></div>
+
+  <main class="landing">
+    <div class="logo-wrap">
+      <div class="logo-halo"></div>
+      <img class="logo" src="/logo.jpg" alt="Naija Campus Life: Learn, Grow, Survive" width="1672" height="941" fetchpriority="high" />
+      <div class="logo-shine"></div>
+    </div>
+
+    <h2 class="subtitle"><span>Into</span> <span>the</span> <span class="wolves">Wolves</span></h2>
+    <p class="pitch">Lion's Den University, Lagos. Four years. Your money, your grades, your friends.<br />Not everyone on campus is on your side.</p>
+
+    <div class="chips"><span>🎓 Learn</span><span>💰 Hustle</span><span>🛡️ Survive</span></div>
+
+    <button id="startBtn"><span>Enter Lion's Den</span><i></i></button>
+    <p class="hint"><span class="hint-touch">Left stick to walk · drag to look</span><span class="hint-key">WASD / arrows to walk · drag to look</span></p>
+    <p class="fineprint">18+ · A work of fiction. All people, brands and places are made up.</p>
+  </main>
 </div>
 
 <script type="module" src="/src/main.js"></script>

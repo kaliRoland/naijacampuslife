@@ -48,8 +48,20 @@ function toast(html) {
 }
 const objective = t => { $('objective').textContent = t; };
 
+// Landing page: floating gold embers
+{
+  const box = $('embers');
+  for (let i = 0; i < 22; i++) {
+    const e = document.createElement('i');
+    e.style.cssText = `left:${Math.random() * 100}%;--s:${3 + Math.random() * 5}px;--d:${7 + Math.random() * 8}s;--delay:${-Math.random() * 12}s;--x:${(Math.random() - 0.5) * 120}px`;
+    box.appendChild(e);
+  }
+}
+
 $('startBtn').onclick = () => {
-  $('start').hidden = true; state = 'bus'; objective(TEXT.objective_bus);
+  $('start').classList.add('leaving');
+  setTimeout(() => { $('start').hidden = true; }, 600);
+  state = 'bus'; objective(TEXT.objective_bus);
   document.documentElement.requestFullscreen?.().catch(() => {});
   navigator.serviceWorker?.register('/sw.js').catch(() => {});
 };
@@ -125,7 +137,7 @@ function frame() {
   camera.position.lerp(camPos, 1 - Math.pow(0.001, dt));
   camera.lookAt(player.position.x, 1.6, player.position.z);
 
-  renderer.render(scene, camera);
+  if (state !== 'intro') renderer.render(scene, camera);   // no need to draw behind the landing page
   requestAnimationFrame(frame);
 }
 frame();

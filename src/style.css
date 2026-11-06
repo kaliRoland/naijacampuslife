@@ -17,12 +17,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:#111;font-family:syste
 .tx{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #fff2;font-size:14px}
 .tx small{display:block;color:#aaa}
 .tx .in{color:#4cd964}.tx .out{color:#ff6b6b}
-#choice,#start{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:20;padding:16px}
-#start{background:#0b3d2e}
+#choice{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:20;padding:16px}
 .card{background:#fff;color:#111;border-radius:16px;padding:20px;max-width:420px;width:100%;text-align:center}
-#start .card{background:none;color:#fff}
 h1{margin:0;font-size:32px;color:#f2c94c}h2{margin:4px 0 14px}
-.card button,#startBtn{display:block;width:100%;margin:10px 0 0;padding:14px;font-size:16px;border:0;border-radius:12px;background:#0b3d2e;color:#fff}
-#startBtn{background:#f2c94c;color:#111;font-weight:700}
-#start small{display:block;margin-top:14px;opacity:.7}
+.card button{display:block;width:100%;margin:10px 0 0;padding:14px;font-size:16px;border:0;border-radius:12px;background:#0b3d2e;color:#fff}
 [hidden]{display:none!important}
