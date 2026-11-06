@@ -1,10 +1,15 @@
 import * as THREE from 'three';
 import { buildWorld } from './game/world.js';
 import { createNPCs, updateNPCs } from './game/npcs.js';
+import { createInteractables, updateInteractables, faceToward } from './game/interact.js';
 import { makePlayer, animatePlayer } from './game/models.js';
 import { setupControls, input } from './game/controls.js';
 import { wallet, naira } from './game/wallet.js';
+import { game } from './game/state.js';
+import { initPhone } from './game/phone.js';
+import { startDialogue, isTalking } from './game/dialogue.js';
 import { STARTING_ALLOWANCE, TEXT, GATE_CHOICE } from './data/story.js';
+import { CATEGORIES } from './data/prices.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('game');
@@ -14,6 +19,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 200);
 const { bus, colliders } = buildWorld(scene);
 createNPCs(scene);
+createInteractables(scene);
 const player = makePlayer(scene);
 player.position.set(0, 0, 23.5);
 player.rotation.y = Math.PI;
@@ -25,30 +31,39 @@ function resize() {
 }
 addEventListener('resize', resize); resize();
 
-// ---- Phone UI ----
-const fmtTime = d => d.toLocaleTimeString('en-NG', { hour: '2-digit', minute: '2-digit' });
-function renderPhone() {
-  $('bal').textContent = naira(wallet.balance);
-  $('txList').innerHTML = wallet.log.map(t => `
-    <div class="tx"><div>${t.reason}<small>${fmtTime(t.time)} · Bal ${naira(t.balance)}</small></div>
-    <div class="${t.amount >= 0 ? 'in' : 'out'}">${t.amount >= 0 ? '+' : '-'}${naira(t.amount)}</div></div>`).join('');
-}
-wallet.onChange(renderPhone); renderPhone();
-
-// ---- Game flow: intro -> bus -> walk -> choice -> done ----
+// ---- Game flow: intro -> bus -> walk -> choice -> free roam (Week 2 errands) ----
 let state = 'intro';
-const canMove = () => state === 'walk' || state === 'done';
-$('phoneBtn').onclick = () => { $('phone').hidden = false; $('badge').hidden = true; input.enabled = false; };
-$('phoneClose').onclick = () => { $('phone').hidden = true; input.enabled = canMove(); };
+const canMove = () => (state === 'walk' || state === 'done') && !isTalking() && $('phone').hidden;
+const syncInput = () => { input.enabled = canMove(); };
 
+// ---- Phone ----
+initPhone();
+$('phoneBtn').onclick = () => { $('phone').hidden = false; $('badge').hidden = true; syncInput(); };
+$('phoneClose').onclick = () => { $('phone').hidden = true; syncInput(); };
+
+// ---- Bank alerts: every transaction pops a short SMS-style alert ----
 let toastTimer;
 function toast(html) {
   const t = $('toast'); t.innerHTML = html; t.hidden = false;
-  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 5000);
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 4500);
 }
-const objective = t => { $('objective').textContent = t; };
+wallet.onChange(tx => {
+  const c = CATEGORIES[tx.category] || CATEGORIES.other;
+  toast(`<b>Bank alert · ${tx.amount >= 0 ? 'Credit' : 'Debit'}</b><br>${c.icon} ${tx.amount >= 0 ? '+' : '-'}${naira(tx.amount)}<br>${tx.reason}<br><small>Balance: ${naira(tx.balance)}</small>`);
+  $('badge').hidden = $('phone').hidden ? false : true;
+});
 
-// Landing page: floating gold embers
+// ---- Objective follows your progress ----
+const objective = t => { $('objective').textContent = t; };
+function updateObjective() {
+  if (state !== 'done') return;
+  if (game.flags.registered) objective(TEXT.objective_registered);
+  else if (game.inv.photos && game.inv.copies) objective(TEXT.objective_fee);
+  else objective(TEXT.objective_register);
+}
+document.addEventListener('inventory', updateObjective);
+
+// ---- Landing page: floating gold embers ----
 {
   const box = $('embers');
   for (let i = 0; i < 22; i++) {
@@ -67,10 +82,8 @@ $('startBtn').onclick = () => {
 };
 
 function atGate() {
-  state = 'choice'; input.enabled = false;
-  wallet.add(STARTING_ALLOWANCE, TEXT.bankAlert);
-  toast(`<b>Bank alert</b><br>Credit: ${naira(STARTING_ALLOWANCE)}<br>${TEXT.bankAlert}`);
-  $('badge').hidden = false;
+  state = 'choice'; syncInput();
+  wallet.add(STARTING_ALLOWANCE, TEXT.bankAlert, 'allowance');
   setTimeout(showChoice, 1800);
 }
 function showChoice() {
@@ -79,17 +92,32 @@ function showChoice() {
   GATE_CHOICE.options.forEach(o => {
     const b = document.createElement('button'); b.textContent = o.label;
     b.onclick = () => {
-      if (o.cost) wallet.spend(o.cost, o.reason);
+      if (o.cost) wallet.spend(o.cost, o.reason, o.category);
       $('choiceBtns').innerHTML = '';
       $('choiceResult').textContent = o.result; $('choiceResult').hidden = false;
       const ok = document.createElement('button'); ok.textContent = 'Continue';
-      ok.onclick = () => { $('choice').hidden = true; state = 'done'; input.enabled = true; objective(TEXT.objective_done); };
+      ok.onclick = () => { $('choice').hidden = true; state = 'done'; syncInput(); updateObjective(); };
       $('choiceBtns').appendChild(ok);
     };
     $('choiceBtns').appendChild(b);
   });
   $('choiceResult').hidden = true; $('choice').hidden = false;
 }
+
+// ---- Talking to people ----
+let nearby = null;
+function talk() {
+  if (!nearby || isTalking() || !canMove()) return;
+  const it = nearby;
+  faceToward(it, player.position);
+  player.rotation.y = Math.atan2(it.x - player.position.x, it.z - player.position.z);
+  animatePlayer(player, 0, 0);
+  $('talkBtn').hidden = true;
+  startDialogue(it.id, () => { syncInput(); updateObjective(); });
+  syncInput();
+}
+$('talkBtn').onclick = talk;
+input.onInteract = talk;
 
 // ---- Loop ----
 const clock = new THREE.Clock();
@@ -101,7 +129,7 @@ function frame() {
   if (state === 'bus') {                       // bus rolls in from the left and stops at the pavement
     const target = -12;
     bus.position.x += Math.max(2, (target - bus.position.x) * 1.2) * dt * 1.5;
-    if (bus.position.x >= target - 0.2) { bus.position.x = target; state = 'walk'; input.enabled = true; objective(TEXT.objective_walk); }
+    if (bus.position.x >= target - 0.2) { bus.position.x = target; state = 'walk'; syncInput(); objective(TEXT.objective_walk); }
   }
 
   input.update();
@@ -130,6 +158,10 @@ function frame() {
   player.position.x = nx; player.position.z = nz;
 
   updateNPCs(dt, clock.elapsedTime);
+  nearby = state === 'done' ? updateInteractables(clock.elapsedTime, player.position) : null;
+  const showTalk = nearby && canMove();
+  $('talkBtn').hidden = !showTalk;
+  if (showTalk) $('talkBtn').innerHTML = `${TEXT.talk} <small>${nearby.name}${matchMedia('(pointer: fine)').matches ? ' · press E' : ''}</small>`;
   if (state === 'walk' && player.position.z < -2) atGate();
 
   // Third-person follow camera

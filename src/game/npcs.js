@@ -84,3 +84,6 @@ export function updateNPCs(dt, t) {
     void py;
   }
 }
+
+// Let other files register standing people so they get the idle animation
+export function addIdle(obj) { people.push({ obj, kind: "idle" }); }

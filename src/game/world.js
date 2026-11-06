@@ -159,8 +159,32 @@ export function buildWorld(scene) {
   // Lamps with green flags along the avenue
   for (let z = 10; z > -50; z -= 12) { lamp(-6.5, z, g, true); lamp(6.5, z, g, false); }
   // Trees and benches
-  for (const [x, z] of [[-14, 12], [16, 14], [-30, 14], [28, 8], [-16, -8], [16, -8], [-14, -44], [14, -44], [-34, -34], [34, -48], [-32, -50], [-48, 6], [50, 4]]) tree(x, z, g);
+  for (const [x, z] of [[-14, 12], [16, 14], [-30, 14], [28, 8], [16, -8], [-14, -44], [14, -44], [-34, -34], [34, -48], [-32, -50], [-48, 6], [50, 4]]) tree(x, z, g);
   for (const [x, z, r] of [[-9, -26, Math.PI / 2], [9, -26, -Math.PI / 2], [-9, -40, Math.PI / 2], [9, -40, -Math.PI / 2]]) bench(x, z, r, g);
+
+  // ---- Registration desk under a canopy (Week 2) ----
+  for (const [x, z] of [[13.5, -13.5], [20.5, -13.5], [13.5, -19.5], [20.5, -19.5]]) box(0.2, 3.4, 0.2, 0x444444, x, 0, z, g);
+  box(8.4, 0.25, 6.6, 0xffffff, 17, 3.4, -16.5, g);
+  for (let i = 0; i < 8; i++) if (i % 2 === 0) box(1.05, 0.28, 6.62, GREEN, 13.1 + i * 1.05 + 0.5, 3.4, -16.5, g);
+  sign('STUDENT REGISTRATION', 'Freshers: documents ready!', 7, 1.2, '#0b3d2e', '#f2c94c', g, 17, 2.7, -13.2);
+  box(5.4, 0.9, 1.4, 0x7a5a3a, 17, 0, -18, g);                            // desk
+  box(5.5, 0.08, 1.5, 0xf2f2f2, 17, 0.9, -18, g);                         // tablecloth
+  for (const [dx, c] of [[-1.5, 0xffffff], [-0.6, 0xfff3b0], [0.6, 0xffffff], [1.5, 0xb3e5fc]]) box(0.5, 0.06, 0.7, c, 17 + dx, 0.98, -17.8, g);  // papers
+  box(0.7, 0.5, 0.5, 0x222222, 17.9, 0.98, -18.1, g);                     // laptop
+  for (const x of [-1.6, 1.6]) box(0.5, 0.9, 0.5, 0x1e5fbf, 17 + x, 0, -19.7, g);   // plastic chairs
+  solid(17, -18, 5.4, 1.6);
+  for (let i = 0; i < 5; i++) box(0.12, 1, 0.12, 0xb8860b, 15.2 + (i % 2 ? 3.2 : 0), 0, -12.4 + Math.floor(i / 2) * 1.5, g);  // queue stanchions
+
+  // ---- Supplies Kiosk (Week 2) ----
+  box(5.2, 3.6, 2, 0x2e7d9a, -14, 0, -9.2, g);                            // kiosk body
+  box(5.6, 0.3, 2.6, 0x1b4f63, -14, 3.6, -9.2, g);                        // roof
+  box(5.2, 0.9, 0.8, 0x8d6e63, -14, 0, -6.7, g);                          // counter
+  box(5.3, 0.08, 0.9, 0xd7ccc8, -14, 0.9, -6.7, g);
+  for (let i = 0; i < 6; i++) box(0.9, 0.15, 1.1, i % 2 ? 0xffffff : 0xd32f2f, -16.2 + i * 0.88, 3.0, -5.9, g).rotation.x = -0.25;  // striped awning
+  sign('SUPPLIES KIOSK', "Aunty Ngozi's · Photos · Copies · Zobo", 4.8, 0.95, '#1b4f63', '#ffffff', g, -14, 2.7, -8.12);
+  for (const [dx, c, h] of [[-1.8, 0xffeb3b, 0.35], [-1.2, 0xe53935, 0.5], [-0.6, 0x43a047, 0.3], [0, 0xffffff, 0.2], [0.6, 0x8e24aa, 0.45], [1.2, 0xff9800, 0.3], [1.8, 0x1e88e5, 0.4]])
+    box(0.4, h, 0.4, c, -14 + dx, 0.98, -6.75, g);                        // goods on the counter
+  solid(-14, -9.2, 5.2, 2); solid(-14, -6.7, 5.2, 0.9);
 
   const bus = makeDanfo();
   scene.add(bus);

@@ -9,6 +9,7 @@
 <title>Naija Campus Life: Into the Wolves</title>
 <link rel="stylesheet" href="/src/style.css" />
 <link rel="stylesheet" href="/src/landing.css" />
+<link rel="stylesheet" href="/src/week2.css" />
 <link rel="preload" as="image" href="/logo.jpg" />
 <meta property="og:title" content="Naija Campus Life: Into the Wolves" />
 <meta property="og:description" content="Learn, Grow, Survive. A 3D Lagos campus life thriller." />
@@ -28,8 +29,17 @@
 
 <div id="phone" hidden>
   <div class="phone-head"><b>Phone</b><button id="phoneClose">✕</button></div>
-  <div class="balance"><small>Wallet balance</small><div id="bal">₦0</div></div>
-  <div id="txList"></div>
+  <div id="phoneBody"></div>
+</div>
+
+<button id="talkBtn" hidden></button>
+
+<div id="dialogue" hidden>
+  <div class="dlg-card">
+    <div class="dlg-head"><b id="dlgName"></b><button id="dlgLang"></button></div>
+    <p id="dlgText"></p>
+    <div id="dlgOpts"></div>
+  </div>
 </div>
 
 <div id="choice" hidden>

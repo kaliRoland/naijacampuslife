@@ -1,0 +1,38 @@
+/* ---------- Phone: wallet history ---------- */
+.balance .totals{display:flex;gap:16px;margin-top:8px;font-size:13px;font-weight:600}
+.balance .totals .in{color:#4cd964}.balance .totals .out{color:#ff8a80}
+.tabs,.filters{display:flex;gap:8px;margin:0 0 12px}
+.tabs button{flex:1;padding:10px;border:0;border-radius:10px;background:#1b2a23;color:#9db0a3;font-size:15px;font-weight:600}
+.tabs button.on{background:#f2c94c;color:#1a1300}
+.filters button{padding:6px 14px;border-radius:999px;border:1px solid #fff3;background:none;color:#cfd8cf;font-size:13px}
+.filters button.on{background:#0b3d2e;border-color:#f2c94c;color:#f2c94c}
+.tx{padding:0;border-bottom:1px solid #fff2;display:block;cursor:pointer}
+.tx-main{display:flex;align-items:center;gap:12px;padding:12px 0}
+.tx .ico{width:38px;height:38px;border-radius:12px;background:#1b2a23;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.tx-t{flex:1;font-size:14px;line-height:1.3}.tx-t small{display:block;color:#8fa296;margin-top:2px}
+.tx-main>div:last-child{font-weight:700;white-space:nowrap}
+.tx-detail{margin:0 0 12px 50px;padding:10px 12px;background:#14211b;border-radius:10px;font-size:13px}
+.tx-detail div{display:flex;justify-content:space-between;padding:3px 0}.tx-detail span{color:#8fa296}
+.empty{color:#8fa296;text-align:center;padding:30px 0}
+.bagrow{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #fff2;font-size:15px}
+
+/* ---------- Talk button ---------- */
+#talkBtn{position:fixed;right:18px;bottom:calc(60px + env(safe-area-inset-bottom,0));z-index:6;padding:14px 20px;border:0;border-radius:14px;background:#f2c94c;color:#1a1300;font:800 16px system-ui,Arial,sans-serif;box-shadow:0 6px 20px #0008,0 0 0 3px #fff3c4 inset;animation:talkpulse 1.4s ease-in-out infinite}
+#talkBtn small{display:block;font-weight:500;font-size:11px;opacity:.7}
+@keyframes talkpulse{50%{transform:scale(1.05)}}
+
+/* ---------- Dialogue sheet ---------- */
+#dialogue{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:0 10px calc(10px + env(safe-area-inset-bottom,0));display:flex;justify-content:center;pointer-events:none}
+.dlg-card{pointer-events:auto;width:100%;max-width:640px;max-height:72vh;overflow:auto;background:#0e1a15f2;border:2px solid #f2c94c;border-radius:18px;padding:14px 16px;box-shadow:0 -10px 40px #000a;animation:sheet .25s ease-out}
+@keyframes sheet{from{transform:translateY(40px);opacity:0}}
+.dlg-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.dlg-head b{color:#f2c94c;font-size:15px}
+#dlgLang{border:1px solid #fff4;background:none;color:#cfd8cf;border-radius:999px;padding:5px 10px;font-size:12px;white-space:nowrap}
+#dlgText{margin:0 0 12px;font-size:16px;line-height:1.5;color:#fff}
+#dlgOpts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:12px 14px;border:1px solid #f2c94c66;border-radius:12px;background:#0b3d2e;color:#fff;font-size:15px}
+.opt:active{background:#15803d}
+.opt:disabled{opacity:.45}
+.opt small{color:#ffb4a8;font-size:12px}
+.opt.shop{flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.opt.shop b{color:#f2c94c}.opt.owned b{color:#4cd964}

@@ -1,9 +1,9 @@
 // Keyboard + touch controls. Exposes a move vector (x right, y forward) and look yaw.
-export const input = { moveX: 0, moveY: 0, yaw: 0, enabled: false, update() {} };
+export const input = { moveX: 0, moveY: 0, yaw: 0, enabled: false, update() {}, onInteract: null };
 const keys = {};
 
 export function setupControls(canvas) {
-  addEventListener('keydown', e => { keys[e.code] = true; });
+  addEventListener('keydown', e => { keys[e.code] = true; if ((e.code === 'KeyE' || e.code === 'Enter') && !e.repeat) input.onInteract?.(); });
   addEventListener('keyup', e => { keys[e.code] = false; });
 
   const stick = document.getElementById('stick');
