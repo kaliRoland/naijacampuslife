@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { makeDanfo } from './models.js';
 
 const mat = (c) => new THREE.MeshLambertMaterial({ color: c, flatShading: true });
 const box = (w, h, d, c, x, y, z, parent) => {
@@ -36,22 +37,9 @@ export function buildWorld(scene) {
     box(0.8, 3, 0.8, 0x6b4a2b, x, 0, z, g); box(3.5, 3.5, 3.5, 0x2e7d32, x, 3, z, g);
   }
 
-  // Danfo bus (yellow with black stripe)
-  const bus = new THREE.Group();
-  box(9, 2.6, 3.2, 0xf5c518, 0, 0.8, 0, bus);
-  box(9.02, 0.5, 3.22, 0x111111, 0, 1.6, 0, bus);
-  box(2.4, 1.2, 3.1, 0xf5c518, 4.6, 0.8, 0, bus);
-  for (const x of [-3, 3]) for (const z of [-1.7, 1.7]) box(1.2, 1.2, 0.5, 0x111111, x, 0, z, bus);
+  const bus = makeDanfo();
   scene.add(bus);
   bus.position.set(-90, 0, 27);
 
   return { bus };
-}
-
-export function makePlayer(scene) {
-  const p = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.45, 1.0, 4, 8), mat(0x1e88e5)); body.position.y = 1;
-  const head = new THREE.Mesh(new THREE.SphereGeometry(0.35, 12, 8), mat(0x8d5524)); head.position.y = 2.0;
-  p.add(body, head); scene.add(p);
-  return p;
 }

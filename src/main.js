@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { buildWorld, makePlayer } from './game/world.js';
+import { buildWorld } from './game/world.js';
+import { makePlayer, animatePlayer } from './game/models.js';
 import { setupControls, input } from './game/controls.js';
 import { wallet, naira } from './game/wallet.js';
 import { STARTING_ALLOWANCE, TEXT, GATE_CHOICE } from './data/story.js';
@@ -13,6 +14,7 @@ const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 200);
 const { bus } = buildWorld(scene);
 const player = makePlayer(scene);
 player.position.set(0, 0, 23.5);
+player.rotation.y = Math.PI;
 setupControls(canvas);
 
 function resize() {
@@ -99,10 +101,14 @@ function frame() {
   if (Math.abs(nx) > 4.6 && Math.abs(nz) < 1.6) nz = player.position.z;
   if (Math.abs(nx) > 4.6 && Math.abs(player.position.z) < 1.6) nx = player.position.x;
   // Bus is solid
-  if (Math.abs(nx - bus.position.x) < 5.6 && Math.abs(nz - bus.position.z) < 2.6) { nx = player.position.x; nz = player.position.z; }
-  if (nx !== player.position.x || nz !== player.position.z) {
-    player.rotation.y = Math.atan2(nx - player.position.x, nz - player.position.z);
+  if (nx > bus.position.x - 5.2 && nx < bus.position.x + 7.8 && Math.abs(nz - bus.position.z) < 2.4) { nx = player.position.x; nz = player.position.z; }
+  const moved = Math.hypot(nx - player.position.x, nz - player.position.z);
+  if (moved > 0) {
+    const target = Math.atan2(nx - player.position.x, nz - player.position.z);
+    let d = target - player.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d));
+    player.rotation.y += d * Math.min(1, dt * 14);   // turn smoothly
   }
+  animatePlayer(player, Math.min(1, moved / (SPEED * dt || 1)), dt);
   player.position.x = nx; player.position.z = nz;
 
   if (state === 'walk' && player.position.z < -2) atGate();
