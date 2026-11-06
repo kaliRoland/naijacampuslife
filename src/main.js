@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { buildWorld } from './game/world.js';
+import { createNPCs, updateNPCs } from './game/npcs.js';
 import { makePlayer, animatePlayer } from './game/models.js';
 import { setupControls, input } from './game/controls.js';
 import { wallet, naira } from './game/wallet.js';
@@ -11,7 +12,8 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPrefer
 renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 200);
-const { bus } = buildWorld(scene);
+const { bus, colliders } = buildWorld(scene);
+createNPCs(scene);
 const player = makePlayer(scene);
 player.position.set(0, 0, 23.5);
 player.rotation.y = Math.PI;
@@ -95,11 +97,15 @@ function frame() {
   const fx = -sin, fz = -cos, rx = cos, rz = -sin;     // forward / right on the ground
   const vx = (fx * input.moveY + rx * input.moveX) * SPEED * dt;
   const vz = (fz * input.moveY + rz * input.moveX) * SPEED * dt;
-  let nx = THREE.MathUtils.clamp(player.position.x + vx, -45, 45);
-  let nz = THREE.MathUtils.clamp(player.position.z + vz, -45, 33);
+  let nx = THREE.MathUtils.clamp(player.position.x + vx, -66, 66);
+  let nz = THREE.MathUtils.clamp(player.position.z + vz, -51, 33);
   // The perimeter wall blocks everywhere except the gate opening
   if (Math.abs(nx) > 4.6 && Math.abs(nz) < 1.6) nz = player.position.z;
   if (Math.abs(nx) > 4.6 && Math.abs(player.position.z) < 1.6) nx = player.position.x;
+  // Buildings, pillars, trees, fountain: slide along them (player radius 0.5)
+  const R = 0.5, hit = (x, z) => colliders.some(c => x > c.minX - R && x < c.maxX + R && z > c.minZ - R && z < c.maxZ + R);
+  if (hit(nx, player.position.z)) nx = player.position.x;
+  if (hit(nx, nz)) nz = player.position.z;
   // Bus is solid
   if (nx > bus.position.x - 5.2 && nx < bus.position.x + 7.8 && Math.abs(nz - bus.position.z) < 2.4) { nx = player.position.x; nz = player.position.z; }
   const moved = Math.hypot(nx - player.position.x, nz - player.position.z);
@@ -111,6 +117,7 @@ function frame() {
   animatePlayer(player, Math.min(1, moved / (SPEED * dt || 1)), dt);
   player.position.x = nx; player.position.z = nz;
 
+  updateNPCs(dt, clock.elapsedTime);
   if (state === 'walk' && player.position.z < -2) atGate();
 
   // Third-person follow camera

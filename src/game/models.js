@@ -79,21 +79,25 @@ export function makeDanfo() {
   return bus;
 }
 
-// ---------- Student (faces +z), jointed so arms and legs can swing ----------
-export function makePlayer(scene) {
+// ---------- Person (faces +z), jointed so arms and legs can swing ----------
+export function makePerson(o = {}) {
+  const SKIN = o.skin ?? 0x8d5524, TOP = o.top ?? 0x1e88e5, BOTTOM = o.bottom ?? 0x2b3a67;
+  const HAIR = o.hair ?? 0x15110e, SHOE = o.shoe ?? 0xf2f2f2, female = !!o.female;
   const p = new THREE.Group();
-  const SKIN = 0x8d5524, SHIRT = 0x1e88e5, JEANS = 0x2b3a67, SHOE = 0xf2f2f2;
   const part = (w, h, d, c, x, y, z, parent) => box(w, h, d, c, x, y, z, parent);
 
-  part(0.62, 0.7, 0.34, SHIRT, 0, 1.4, 0, p);                        // torso
-  part(0.64, 0.12, 0.36, 0x14508a, 0, 1.08, 0, p);                   // hem
+  part(0.62, 0.7, 0.34, TOP, 0, 1.4, 0, p);                          // torso
+  part(0.64, 0.12, 0.36, o.hem ?? TOP, 0, 1.08, 0, p);
+  if (female) part(0.74, 0.5, 0.42, o.skirt ?? BOTTOM, 0, 0.95, 0, p); // skirt
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.27, 14, 12), mat(SKIN)); head.position.y = 2.0; p.add(head);
-  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.285, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), mat(0x15110e));
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.285, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.5), mat(HAIR));
   hair.position.y = 2.03; p.add(hair);
+  if (female) part(0.5, 0.5, 0.16, HAIR, 0, 1.85, -0.22, p);         // long hair
+  if (o.cap) part(0.56, 0.1, 0.62, o.cap, 0, 2.27, 0.05, p);         // cap
   part(0.12, 0.12, 0.12, SKIN, 0, 1.78, 0, p);                       // neck
   part(0.05, 0.05, 0.04, 0x111111, -0.1, 2.02, 0.26, p);             // eyes
   part(0.05, 0.05, 0.04, 0x111111, 0.1, 2.02, 0.26, p);
-  part(0.34, 0.5, 0.14, 0x37474f, 0, 1.45, -0.24, p);                // backpack
+  if (o.bag !== false) part(0.34, 0.5, 0.14, o.bag ?? 0x37474f, 0, 1.45, -0.24, p);
 
   const limb = (x, y, w, h, d, c, tipC, tipH) => {                   // pivot at the top of the limb
     const g = new THREE.Group(); g.position.set(x, y, 0);
@@ -101,22 +105,38 @@ export function makePlayer(scene) {
     if (tipC) part(w + 0.02, tipH, d + (tipH > 0.15 ? 0.14 : 0), tipC, 0, -h + tipH / 2, tipH > 0.15 ? 0.06 : 0, g);
     p.add(g); return g;
   };
-  p.userData.armL = limb(-0.4, 1.7, 0.18, 0.62, 0.2, SHIRT, SKIN, 0.18);
-  p.userData.armR = limb(0.4, 1.7, 0.18, 0.62, 0.2, SHIRT, SKIN, 0.18);
-  p.userData.legL = limb(-0.17, 1.05, 0.26, 1.05, 0.28, JEANS, SHOE, 0.2);
-  p.userData.legR = limb(0.17, 1.05, 0.26, 1.05, 0.28, JEANS, SHOE, 0.2);
+  const sleeve = o.longSleeve ? TOP : TOP;
+  p.userData.armL = limb(-0.4, 1.7, 0.18, 0.62, 0.2, sleeve, SKIN, 0.18);
+  p.userData.armR = limb(0.4, 1.7, 0.18, 0.62, 0.2, sleeve, SKIN, 0.18);
+  p.userData.legL = limb(-0.17, 1.05, 0.26, 1.05, 0.28, BOTTOM, SHOE, 0.2);
+  p.userData.legR = limb(0.17, 1.05, 0.26, 1.05, 0.28, BOTTOM, SHOE, 0.2);
+  p.userData.phase = Math.random() * 6;
+  return p;
+}
 
+export function makePlayer(scene) {
+  const p = makePerson();
   scene.add(p);
   return p;
 }
 
-// Call every frame; `speed` is 0..1 of walking pace
-let phase = 0;
+// Call every frame; `speed` is 0..1 of walking pace. Standing people (speed 0) get a gentle idle sway.
 export function animatePlayer(p, speed, dt) {
-  phase += dt * 10 * speed;
-  const s = Math.sin(phase) * 0.8 * speed;
   const u = p.userData;
+  u.phase += dt * 10 * Math.max(speed, 0.0);
+  const s = Math.sin(u.phase) * 0.8 * speed;
   u.legL.rotation.x = s; u.legR.rotation.x = -s;
   u.armL.rotation.x = -s * 0.9; u.armR.rotation.x = s * 0.9;
-  p.position.y = Math.abs(Math.sin(phase)) * 0.05 * speed;
+  p.children[0].position.y = 1.4;                                    // torso stays put
+  p.position.y = Math.abs(Math.sin(u.phase)) * 0.05 * speed;
 }
+
+// Standing person chatting: small arm gestures
+export function animateIdle(p, t) {
+  const u = p.userData, k = t + u.phase;
+  u.armR.rotation.x = -0.5 + Math.sin(k * 2.2) * 0.35;
+  u.armL.rotation.x = Math.sin(k * 0.9) * 0.08;
+  u.legL.rotation.x = u.legR.rotation.x = 0;
+}
+
+export { box as _box, mat as _mat };
