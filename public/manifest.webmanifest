@@ -1,0 +1,10 @@
+{
+  "name": "Naija Campus Life: Into the Wolves",
+  "short_name": "Campus Life",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0b3d2e",
+  "theme_color": "#0b3d2e",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

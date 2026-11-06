@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0b3d2e" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="icon" href="/icon.svg" type="image/svg+xml" />
+<title>Naija Campus Life: Into the Wolves</title>
+<link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div id="objective"></div>
+  <button id="phoneBtn" aria-label="Open phone">📱<span id="badge" hidden>1</span></button>
+</div>
+
+<div id="stick" hidden><div id="knob"></div></div>
+
+<div id="toast" hidden></div>
+
+<div id="phone" hidden>
+  <div class="phone-head"><b>Phone</b><button id="phoneClose">✕</button></div>
+  <div class="balance"><small>Wallet balance</small><div id="bal">₦0</div></div>
+  <div id="txList"></div>
+</div>
+
+<div id="choice" hidden>
+  <div class="card">
+    <p id="choiceText"></p>
+    <div id="choiceBtns"></div>
+    <p id="choiceResult" hidden></p>
+  </div>
+</div>
+
+<div id="start">
+  <div class="card">
+    <h1>Naija Campus Life</h1>
+    <h2>Into the Wolves</h2>
+    <p>Lion's Den University, Lagos. Your first day.</p>
+    <button id="startBtn">Start</button>
+    <small>Move: WASD / arrows, or the on-screen stick. Look: drag.</small>
+  </div>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
