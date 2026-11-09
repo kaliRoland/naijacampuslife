@@ -136,7 +136,8 @@ async function buildings(world) {
     b.parts.visible = false;
     if (b.sign) { b.sign.position.set(b.x, Math.min(size.y * 0.5, 5.2), b.z + size.z / 2 + 0.15); }   // our own banner on the new facade
     // Collision follows the real model
-    world.colliders.push({ minX: b.x - size.x / 2, maxX: b.x + size.x / 2, minZ: b.z - size.z / 2, maxZ: b.z + size.z / 2 });
+    const foot = { minX: b.x - size.x / 2, maxX: b.x + size.x / 2, minZ: b.z - size.z / 2, maxZ: b.z + size.z / 2 };
+    world.colliders.push(foot); world.occluders.push({ ...foot, minY: 0, maxY: size.y });
   }
 }
 

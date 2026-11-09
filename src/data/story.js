@@ -26,13 +26,13 @@ export const HELP = {
     '<b>Left stick</b>: walk',
     '<b>Drag the screen</b>: look around',
     '<b>Talk</b> button (gold, bottom right): talk to people with a ◆ above them',
-    '<b>📱</b>: your phone, wallet and bag &nbsp; <b>🗺️</b>: campus map &nbsp; <b>🔊</b>: music on/off',
+    '<b>📱</b>: your phone, wallet and bag &nbsp; <b>🗺️</b>: campus map &nbsp; <b>🎥</b>: aerial view &nbsp; <b>🔊</b>: music on/off',
   ],
   controlsKeys: [
     '<b>W A S D</b> or arrow keys: walk',
     '<b>Drag the mouse</b>: look around',
     '<b>E</b>: talk to people with a ◆ above them',
-    '<b>M</b>: campus map &nbsp; <b>📱</b>: phone, wallet and bag &nbsp; <b>🔊</b>: music on/off',
+    '<b>M</b>: campus map &nbsp; <b>V</b>: aerial view &nbsp; <b>📱</b>: phone, wallet and bag &nbsp; <b>🔊</b>: music on/off',
   ],
   gotIt: "Let's go!",
 };

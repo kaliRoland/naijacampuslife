@@ -9,7 +9,13 @@ const box = (w, h, d, c, x, y, z, parent, o) => {
   m.position.set(x, y + h / 2, z); parent.add(m); return m;
 };
 const colliders = [];
-const solid = (x, z, w, d) => colliders.push({ minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2 });
+// Things the player cannot walk through. With a height `h`, they also block the camera's view of the player.
+const occluders = [];
+const solid = (x, z, w, d, h = 0) => {
+  const box = { minX: x - w / 2, maxX: x + w / 2, minZ: z - d / 2, maxZ: z + d / 2 };
+  colliders.push(box);
+  if (h) occluders.push({ ...box, minY: 0, maxY: h });
+};
 
 function textTexture(w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h;
@@ -50,7 +56,7 @@ function building(id, w, h, d, wall, roof, floors, cols, x, z, parent, label) {
   box(5, 0.4, 2, roof, x, 3.2, z + d / 2 + 0.9, parts);                            // porch roof
   for (const s of [-2.2, 2.2]) box(0.4, 3.2, 0.4, 0xeeeae0, x + s, 0, z + d / 2 + 1.6, parts);
   const signMesh = label && sign(label, null, Math.min(w * 0.7, 12), 1.6, '#0b3d2e', '#f2c94c', parent, x, h - 1.2, z + d / 2 + 0.06);
-  solid(x, z, w + 1, d + 1);
+  solid(x, z, w + 1, d + 1, h);
   const info = { id, x, z, w, h, d, parts, sign: signMesh };
   buildingList.push(info); return info;
 }
@@ -61,7 +67,7 @@ const tree = (x, z, parent, s = 1) => {
   f.position.set(x, 4 * s, z); parent.add(f);
   const f2 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.5 * s, 0), mat(0x3b9a3f));
   f2.position.set(x + 0.9 * s, 4.9 * s, z + 0.3 * s); parent.add(f2);
-  solid(x, z, 1, 1);
+  solid(x, z, 1.4, 1.4, 6);
 };
 const bench = (x, z, ry, parent) => {
   const b = new THREE.Group();
@@ -112,7 +118,7 @@ export function buildWorld(scene) {
     box(2.8, 0.5, 2.8, STONE, x, 7.8, 0, g);                          // cap
     const ball = new THREE.Mesh(new THREE.SphereGeometry(0.55, 10, 8), mat(GOLD)); ball.position.set(x, 8.8, 0); g.add(ball);
     box(2.8, 0.3, 2.8, GOLD, x, 8.3, 0, g);
-    solid(x, 0, 2.8, 2.8);
+    solid(x, 0, 2.8, 2.8, 9);
   }
   box(11, 1.6, 1.6, STONE, 0, 7.6, 0, g);                             // gate beam
   box(11, 0.3, 1.8, GREEN, 0, 9.1, 0, g);                             // beam top trim
@@ -135,7 +141,7 @@ export function buildWorld(scene) {
   // Guard house + boom barrier
   box(4, 3.4, 4, 0xf0ece0, 11, 0, 4, g); box(4.6, 0.4, 4.6, GREEN, 11, 3.4, 4, g);
   box(0.1, 1.2, 1.8, 0x22343f, 8.95, 1.4, 4, g); box(1.2, 2.3, 0.1, 0x3b2f2a, 11, 0, 6.05, g);
-  solid(11, 4, 4.6, 4.6);
+  solid(11, 4, 4.6, 4.6, 3.6);
   box(0.4, 1.2, 0.4, 0x555555, 7.6, 0, 7, g);
   const boom = box(5, 0.18, 0.18, 0xffffff, 9.9, 2.4, 7, g); boom.rotation.z = 0.5;      // raised barrier
 
@@ -155,7 +161,7 @@ export function buildWorld(scene) {
   const body = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1, 0.8), mat(GOLD)); body.position.set(0, 3, -20); g.add(body);
   const head = new THREE.Mesh(new THREE.SphereGeometry(0.55, 10, 8), mat(GOLD)); head.position.set(0.9, 3.6, -20); g.add(head);
   box(0.25, 1.2, 0.25, GOLD, 0.6, 1.8, -19.7, g); box(0.25, 1.2, 0.25, GOLD, -0.6, 1.8, -20.3, g);
-  solid(0, -20, 7.6, 7.6);
+  solid(0, -20, 7.6, 7.6, 0); occluders.push({ minX: -1, maxX: 1, minZ: -21, maxZ: -19, minY: 0, maxY: 4.5 });   // statue
 
   // Flower beds beside the forecourt and avenue
   for (const [x, z] of [[-8.5, -6], [8.5, -6], [-8.5, -12], [8.5, -12], [-9, 14], [9, 14]]) {
@@ -191,12 +197,12 @@ export function buildWorld(scene) {
   sign('SUPPLIES KIOSK', "Aunty Ngozi's · Photos · Copies · Zobo", 4.8, 0.95, '#1b4f63', '#ffffff', g, -14, 2.7, -8.12);
   for (const [dx, c, h] of [[-1.8, 0xffeb3b, 0.35], [-1.2, 0xe53935, 0.5], [-0.6, 0x43a047, 0.3], [0, 0xffffff, 0.2], [0.6, 0x8e24aa, 0.45], [1.2, 0xff9800, 0.3], [1.8, 0x1e88e5, 0.4]])
     box(0.4, h, 0.4, c, -14 + dx, 0.98, -6.75, g);                        // goods on the counter
-  solid(-14, -9.2, 5.2, 2); solid(-14, -6.7, 5.2, 0.9);
+  solid(-14, -9.2, 5.2, 2, 3.8); solid(-14, -6.7, 5.2, 0.9);
 
   const bus = makeDanfo();
   scene.add(bus);
   bus.position.set(-90, 0, 27);
 
   bus.userData.collide = { minX: -5.2, maxX: 7.8, halfZ: 2.4 };   // replaced when the real model loads
-  return { bus, colliders, buildingList, treeSpots, flowerSpots, treesG, flowersG, awningG, group: g };
+  return { bus, colliders, occluders, buildingList, treeSpots, flowerSpots, treesG, flowersG, awningG, group: g };
 }

@@ -59,6 +59,7 @@ $('mapBtn').onclick = openMap; $('minimap').onclick = openMap; $('mapClose').onc
 $('helpBtn').onclick = () => { help.open(); syncInput(); };
 addEventListener('keydown', e => {
   if (e.code === 'KeyM' && !e.repeat) { map.isOpen ? closeMap() : (canMove() && openMap()); }
+  if (e.code === 'KeyV' && !e.repeat && canMove()) toggleView();
   if (e.code === 'Escape') { if (map.isOpen) closeMap(); else if (help.isOpen()) $('helpOk').click(); }
 });
 // What the player should do next, and where
@@ -172,7 +173,32 @@ input.onInteract = talk;
 
 // ---- Loop ----
 const clock = new THREE.Clock();
-const camPos = new THREE.Vector3();
+const camPos = new THREE.Vector3(), head = new THREE.Vector3();
+const VIEWS = { follow: { dist: 8, h: 4.5, fov: 60, look: 1.6 }, aerial: { dist: 8, h: 19, fov: 55, look: 0.6 } };
+const cam = { ...VIEWS.follow };
+let view = 'follow';
+function toggleView() {
+  view = view === 'follow' ? 'aerial' : 'follow';
+  toast('<b>Camera</b><br>' + (view === 'aerial' ? '🛰️ Aerial view: see the whole campus from above' : '🎥 Follow view'));
+}
+$('viewBtn').onclick = toggleView;
+// Where along the line from a to b (0..1) the first solid object is hit; 1 = nothing in the way
+function firstBlock(a, b, boxes) {
+  let best = 1; const M = 0.3;
+  const d = [b.x - a.x, b.y - a.y, b.z - a.z], o = [a.x, a.y, a.z];
+  for (const bx of boxes) {
+    const lo = [bx.minX - M, (bx.minY ?? 0) - M, bx.minZ - M], hi = [bx.maxX + M, bx.maxY + M, bx.maxZ + M];
+    let t0 = 0, t1 = 1;
+    for (let i = 0; i < 3 && t0 <= t1; i++) {
+      if (Math.abs(d[i]) < 1e-6) { if (o[i] < lo[i] || o[i] > hi[i]) t0 = 2; continue; }
+      let ta = (lo[i] - o[i]) / d[i], tb = (hi[i] - o[i]) / d[i];
+      if (ta > tb) [ta, tb] = [tb, ta];
+      t0 = Math.max(t0, ta); t1 = Math.min(t1, tb);
+    }
+    if (t0 <= t1 && t0 > 0 && t0 < best) best = t0;
+  }
+  return best;
+}
 const SPEED = 6;
 function frame() {
   const dt = Math.min(clock.getDelta(), 0.05);
@@ -223,10 +249,21 @@ function frame() {
   if (showTalk) $('talkBtn').innerHTML = `${TEXT.talk} <small>${nearby.name}${matchMedia('(pointer: fine)').matches ? ' · press E' : ''}</small>`;
   if (state === 'walk' && player.position.z < -2) atGate();
 
-  // Third-person follow camera
-  camPos.set(player.position.x + sin * 8, 4.5, player.position.z + cos * 8);
-  camera.position.lerp(camPos, 1 - Math.pow(0.001, dt));
-  camera.lookAt(player.position.x, 1.6, player.position.z);
+  // Camera: follow view or aerial view, and a wall, tree or building never hides the player
+  {
+    const V = VIEWS[view], k = Math.min(1, dt * 3);
+    for (const key of ['dist', 'h', 'fov', 'look']) cam[key] += (V[key] - cam[key]) * k;
+    if (Math.abs(camera.fov - cam.fov) > 0.05) { camera.fov = cam.fov; camera.updateProjectionMatrix(); }
+    head.set(player.position.x, 1.8, player.position.z);
+    camPos.set(player.position.x + sin * cam.dist, cam.h, player.position.z + cos * cam.dist);
+    const t = firstBlock(head, camPos, world.occluders), blocked = t < 1;
+    if (blocked) {                                   // pull the camera in front of the obstacle, and lift it a little to peek over
+      const keep = Math.max(2.2 / head.distanceTo(camPos), t - 0.06);
+      camPos.lerpVectors(head, camPos, keep); camPos.y += (1 - keep) * 3;
+    }
+    camera.position.lerp(camPos, blocked ? 0.35 : 1 - Math.pow(0.001, dt));
+    camera.lookAt(player.position.x, cam.look, player.position.z);
+  }
 
   if (state !== 'intro') renderer.render(scene, camera);   // no need to draw behind the landing page
   if (debugBox && ++dbgFrames >= 30) {

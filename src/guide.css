@@ -1,7 +1,7 @@
 /* ---------- Sound, map, help buttons ---------- */
 #soundBtn,#sideBtns button{width:46px;height:46px;border-radius:14px;border:2px solid #f2c94c;background:#0b3d2ecc;color:#fff;font-size:22px;padding:0;line-height:1;box-shadow:0 3px 10px #0007}
 #soundBtn{position:fixed;z-index:40;right:max(10px,env(safe-area-inset-right,0));top:max(10px,env(safe-area-inset-top,0))}
-body.playing #soundBtn{top:calc(max(10px,env(safe-area-inset-top,0)) + 170px);z-index:7}
+body.playing #soundBtn{top:calc(max(10px,env(safe-area-inset-top,0)) + 224px);z-index:7}
 #sideBtns{position:fixed;z-index:6;right:max(10px,env(safe-area-inset-right,0));top:calc(max(10px,env(safe-area-inset-top,0)) + 62px);display:flex;flex-direction:column;gap:8px}
 #sideBtns[hidden]{display:none}
 #soundBtn:active,#sideBtns button:active{transform:scale(.92)}
