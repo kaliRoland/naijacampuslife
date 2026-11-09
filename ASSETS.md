@@ -43,3 +43,11 @@ lamps and all signs/banners) is built in code or drawn by us for this game.
 
 Kenney City Kit (Suburban) is downloaded but not used yet. Not from any pack (our own models): gate pillars, perimeter wall,
 kiosk, registration canopy, fountain, benches, lamps, signs.
+
+## Audio
+
+| File | Source | Licence status |
+|---|---|---|
+| public/audio/background-music.m4a (from "backround music.m4a" in the project root) | Supplied by Roland. The file's embedded provenance data says it was generated with Suno (Suno, Inc., model chirp-hawk-t1, created 2026-10-21) and marks it as AI-generated audio. | **TO CONFIRM before public launch:** Suno only grants commercial-use rights for songs made on a paid plan. Roland must confirm which plan was active on 2026-10-21 and keep the Suno song link / receipt. If it was a free plan, replace this track with a CC0 or properly licensed one. |
+
+The music starts when the player taps Start, loops, and can be switched off with the speaker button. Volume is set in `src/game/audio.js`.

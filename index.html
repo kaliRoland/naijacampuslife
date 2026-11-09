@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="/src/style.css" />
 <link rel="stylesheet" href="/src/landing.css" />
 <link rel="stylesheet" href="/src/week2.css" />
+<link rel="stylesheet" href="/src/guide.css" />
 <link rel="preload" as="image" href="/logo.jpg" />
 <meta property="og:title" content="Naija Campus Life: Into the Wolves" />
 <meta property="og:description" content="Learn, Grow, Survive. A 3D Lagos campus life thriller." />
@@ -21,6 +22,28 @@
 <div id="hud">
   <div id="objective"></div>
   <button id="phoneBtn" aria-label="Open phone">📱<span id="badge" hidden>1</span></button>
+</div>
+
+<canvas id="minimap" hidden aria-label="Mini map. Tap to open the full map."></canvas>
+<div id="sideBtns" hidden>
+  <button id="mapBtn" aria-label="Open map">🗺️</button>
+  <button id="helpBtn" aria-label="How to play">❓</button>
+</div>
+<button id="soundBtn" aria-label="Turn music off">🔊</button>
+<div id="waypoint" hidden><span id="wpArrow">➤</span><span class="wp-text"><b id="wpName"></b><small id="wpDist"></small></span></div>
+
+<div id="mapScreen" hidden>
+  <div class="map-head"><b>🗺️ Campus map</b><button id="mapClose" aria-label="Close map">✕</button></div>
+  <div class="map-body"><canvas id="mapCanvas"></canvas></div>
+  <p class="map-note"><span class="star">★</span> Your destination &nbsp; <span class="you">▲</span> You</p>
+</div>
+
+<div id="help" hidden>
+  <div class="help-card">
+    <h3 id="helpTitle"></h3>
+    <div id="helpBody"></div>
+    <button id="helpOk">Let's go!</button>
+  </div>
 </div>
 
 <div id="stick" hidden><div id="knob"></div></div>

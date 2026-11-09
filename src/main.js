@@ -8,7 +8,11 @@ import { wallet, naira } from './game/wallet.js';
 import { game } from './game/state.js';
 import { initPhone } from './game/phone.js';
 import { startDialogue, isTalking } from './game/dialogue.js';
-import { STARTING_ALLOWANCE, TEXT, GATE_CHOICE } from './data/story.js';
+import { STARTING_ALLOWANCE, TEXT, GATE_CHOICE, HELP } from './data/story.js';
+import { TARGETS } from './data/places.js';
+import { startMusic, initMusicButton } from './game/audio.js';
+import { createMap } from './game/map.js';
+import { createBeacon, updateWaypoint, initHelp } from './game/guide.js';
 import { CATEGORIES } from './data/prices.js';
 import { loadAllModels, applyModels } from './game/upgrade.js';
 
@@ -35,13 +39,35 @@ addEventListener('resize', resize); resize();
 
 // ---- Game flow: intro -> bus -> walk -> choice -> free roam (Week 2 errands) ----
 let state = 'intro';
-const canMove = () => (state === 'walk' || state === 'done') && !isTalking() && $('phone').hidden;
+const canMove = () => (state === 'walk' || state === 'done') && !isTalking() && $('phone').hidden && !map.isOpen && !help.isOpen();
 const syncInput = () => { input.enabled = canMove(); };
 
 // ---- Phone ----
 initPhone();
 $('phoneBtn').onclick = () => { $('phone').hidden = false; $('badge').hidden = true; syncInput(); };
 $('phoneClose').onclick = () => { $('phone').hidden = true; syncInput(); };
+
+// ---- Where to go: map, pointer arrow, gold beacon, how-to-play card, music button ----
+const map = createMap(world);
+const beacon = createBeacon(scene);
+const help = initHelp(HELP, () => syncInput());
+$('helpOk').textContent = HELP.gotIt;
+initMusicButton();
+const openMap = () => { if (state === 'intro') return; map.openFull(); syncInput(); };
+const closeMap = () => { map.closeFull(); syncInput(); };
+$('mapBtn').onclick = openMap; $('minimap').onclick = openMap; $('mapClose').onclick = closeMap;
+$('helpBtn').onclick = () => { help.open(); syncInput(); };
+addEventListener('keydown', e => {
+  if (e.code === 'KeyM' && !e.repeat) { map.isOpen ? closeMap() : (canMove() && openMap()); }
+  if (e.code === 'Escape') { if (map.isOpen) closeMap(); else if (help.isOpen()) $('helpOk').click(); }
+});
+// What the player should do next, and where
+function currentTarget() {
+  if (state === 'walk') return TARGETS.gate;
+  if (state !== 'done' || game.flags.registered) return null;
+  return (game.inv.photos && game.inv.copies) ? TARGETS.registration : TARGETS.kiosk;
+}
+let lastTarget = null, miniTick = 0;
 
 // ---- Bank alerts: every transaction pops a short SMS-style alert ----
 let toastTimer;
@@ -98,6 +124,10 @@ $('startBtn').onclick = () => {
   $('start').classList.add('leaving');
   setTimeout(() => { $('start').hidden = true; }, 600);
   state = 'bus'; objective(TEXT.objective_bus);
+  document.body.classList.add('playing'); $('sideBtns').hidden = false; $('minimap').hidden = false;
+  startMusic();                                   // sound is allowed now: the player just tapped
+  if (help.firstTime()) help.open();
+  syncInput();
   document.documentElement.requestFullscreen?.().catch(() => {});
   navigator.serviceWorker?.register('/sw.js').catch(() => {});
 };
@@ -180,6 +210,13 @@ function frame() {
   player.position.x = nx; player.position.z = nz;
 
   updateNPCs(dt, clock.elapsedTime);
+  {                                                  // guide: arrow, beacon, map
+    const target = currentTarget();
+    if (target !== lastTarget) { lastTarget = target; beacon.set(target); }
+    beacon.update(clock.elapsedTime);
+    updateWaypoint(player.position, input.yaw, target, canMove());
+    if (state !== 'intro' && (map.isOpen || ++miniTick % 2 === 0)) map.update(player.position.x, player.position.z, input.yaw, target, clock.elapsedTime, true);
+  }
   nearby = state === 'done' ? updateInteractables(clock.elapsedTime, player.position) : null;
   const showTalk = nearby && canMove();
   $('talkBtn').hidden = !showTalk;

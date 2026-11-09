@@ -1,0 +1,46 @@
+/* ---------- Sound, map, help buttons ---------- */
+#soundBtn,#sideBtns button{width:46px;height:46px;border-radius:14px;border:2px solid #f2c94c;background:#0b3d2ecc;color:#fff;font-size:22px;padding:0;line-height:1;box-shadow:0 3px 10px #0007}
+#soundBtn{position:fixed;z-index:40;right:max(10px,env(safe-area-inset-right,0));top:max(10px,env(safe-area-inset-top,0))}
+body.playing #soundBtn{top:calc(max(10px,env(safe-area-inset-top,0)) + 170px);z-index:7}
+#sideBtns{position:fixed;z-index:6;right:max(10px,env(safe-area-inset-right,0));top:calc(max(10px,env(safe-area-inset-top,0)) + 62px);display:flex;flex-direction:column;gap:8px}
+#sideBtns[hidden]{display:none}
+#soundBtn:active,#sideBtns button:active{transform:scale(.92)}
+
+/* ---------- Mini-map ---------- */
+#minimap{position:fixed;z-index:6;left:max(10px,env(safe-area-inset-left,0));top:calc(max(10px,env(safe-area-inset-top,0)) + 112px);width:112px;height:112px;border-radius:50%;box-shadow:0 3px 12px #000a;background:#243326;cursor:pointer;touch-action:manipulation}
+#minimap[hidden]{display:none}
+
+/* ---------- Pointer arrow ---------- */
+#waypoint{position:fixed;z-index:6;left:50%;bottom:calc(170px + env(safe-area-inset-bottom,0));transform:translateX(-50%);display:flex;align-items:center;gap:10px;padding:8px 16px 8px 10px;border-radius:999px;background:#0b3d2eeb;border:2px solid #f2c94c;box-shadow:0 4px 14px #000a;pointer-events:none;max-width:calc(100vw - 24px);min-width:150px}
+#waypoint[hidden]{display:none}
+#wpArrow{display:inline-block;flex:none;width:34px;height:34px;line-height:34px;text-align:center;font-size:26px;color:#1a1300;background:#f2c94c;border-radius:50%;transition:transform .1s linear}
+.wp-text{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.wp-text b{font-size:14px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wp-text small{font-size:13px;color:#f2c94c;font-weight:700}
+
+/* ---------- Full map ---------- */
+#mapScreen{position:fixed;inset:0;z-index:25;background:#0a120dee;display:flex;flex-direction:column;padding:max(10px,env(safe-area-inset-top,0)) 10px max(10px,env(safe-area-inset-bottom,0))}
+#mapScreen[hidden]{display:none}
+.map-head{display:flex;justify-content:space-between;align-items:center;font-size:18px;padding:4px 4px 8px}
+.map-head button{background:none;border:0;color:#fff;font-size:26px;padding:4px 10px}
+.map-body{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+#mapCanvas{border-radius:12px;max-width:100%}
+.map-note{margin:8px 0 0;text-align:center;font-size:14px;color:#cfd8cf}
+.map-note .star{color:#f2c94c;font-size:18px}.map-note .you{color:#29b6f6}
+
+/* ---------- How to play ---------- */
+#help{position:fixed;inset:0;z-index:28;background:#000b;display:flex;align-items:center;justify-content:center;padding:14px;overflow:auto}
+#help[hidden]{display:none}
+.help-card{background:#10201a;border:2px solid #f2c94c;border-radius:18px;padding:18px 18px 16px;max-width:460px;width:100%;max-height:100%;overflow:auto;color:#fff;animation:sheet .3s ease-out}
+.help-card h3{margin:0 0 8px;color:#f2c94c;font-size:22px;font-family:Georgia,serif}
+.help-card h4{margin:14px 0 6px;color:#f2c94c;font-size:15px}
+.help-goal{margin:0 0 10px;line-height:1.45;font-size:15px;color:#e8efe9}
+.help-steps{margin:0;padding-left:22px;line-height:1.45;font-size:15px}
+.help-steps li{margin-bottom:6px}
+.help-controls{margin:0;padding-left:18px;line-height:1.5;font-size:14px;color:#cfd8cf}
+.help-card button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:12px;background:#f2c94c;color:#1a1300;font:800 17px system-ui,Arial,sans-serif}
+
+@media (max-height:480px){
+  #minimap{width:84px;height:84px;top:calc(max(10px,env(safe-area-inset-top,0)) + 62px)}
+  #waypoint{bottom:calc(14px + env(safe-area-inset-bottom,0));left:auto;right:calc(max(10px,env(safe-area-inset-right,0)) + 190px);transform:none}
+}
