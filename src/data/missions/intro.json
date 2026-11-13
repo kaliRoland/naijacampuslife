@@ -1,0 +1,86 @@
+{
+  "registration": {
+    "title": {
+      "en": "Registration complete",
+      "pcm": "Registration don finish"
+    },
+    "text": {
+      "en": "You queue. You smile for the camera. You sign three forms you do not fully read. By the time the clerk stamps your ID card, the sun is going down.\n\nA hostel allocation slip lands in your hand: BLOCK A, ROOM 14.\n\nIn your pocket: ₦8,500. Everything your family could spare.\n\nFind your hostel before lights out at 10 pm.",
+      "pcm": "You queue. You smile for camera. You sign three forms wey you no read well. By the time clerk stamp your ID card, sun don dey go down.\n\nHostel allocation slip land for your hand: BLOCK A, ROOM 14.\n\nFor your pocket: ₦8,500. Everything wey your family fit spare.\n\nFind your hostel before lights out by 10 pm."
+    },
+    "button": {
+      "en": "Go to the hostel",
+      "pcm": "Go to the hostel"
+    }
+  },
+  "lightsOut": {
+    "title": {
+      "en": "Lights out",
+      "pcm": "Lights out"
+    },
+    "default": {
+      "en": "The corridor goes dark. Somewhere, a generator coughs and settles into a hum.",
+      "pcm": "Corridor go dark. Somewhere, generator cough and settle for hum."
+    },
+    "byOutcome": {
+      "m01_out_negotiate": {
+        "en": "You lie on the window bunk. It cost you, but it is yours tonight.",
+        "pcm": "You lie for window bunk. E cost you, but na your own tonight."
+      },
+      "m01_out_report": {
+        "en": "Your bed is cleared. Through the wall, you hear Killer say your name.",
+        "pcm": "Your bed don clear. Through wall, you hear Killer dey call your name."
+      },
+      "m01_out_challenge_pass": {
+        "en": "You hold your bed. Your hands will not stop shaking.",
+        "pcm": "You hold your bed. Your hand no wan stop shake."
+      },
+      "m01_out_challenge_fail": {
+        "en": "Your arm aches. The spare bunk creaks every time you breathe.",
+        "pcm": "Your hand dey pain you. Spare bunk dey creak every time you breathe."
+      },
+      "m01_out_pay_student": {
+        "en": "Room 12 is quiet. A decent bunk, and a seller who will remember you.",
+        "pcm": "Room 12 quiet. Better bunk, and seller wey go remember you."
+      },
+      "m01_out_other_room": {
+        "en": "You sleep on Chuks' floor. He smiled when you said yes, and you cannot stop thinking about it.",
+        "pcm": "You sleep for Chuks floor. E smile when you talk yes, and you no fit stop to think am."
+      },
+      "m01_out_off_campus": {
+        "en": "The off-campus room smells of damp. You are alone, and nobody here owes you anything.",
+        "pcm": "Off-campus room dey smell damp. You dey alone, and nobody here owe you anything."
+      },
+      "m01_out_floor": {
+        "en": "No bed tonight. You sleep sitting against the corridor wall, bag in your arms.",
+        "pcm": "No bed tonight. You sleep dey sit for corridor wall, bag for your hand."
+      }
+    }
+  },
+  "end": {
+    "title": {
+      "en": "End of M-01: The Bed",
+      "pcm": "End of M-01: The Bed"
+    },
+    "text": {
+      "en": "Your first night at Lion's Den is over. Every choice you made tonight is remembered: the people you paid, the people you crossed, the favours you owe.\n\nNext: M-02 New Faces (the cafeteria, Amara and Nneka). That is coming in the next build.\n\nFor now you can explore the hostel, check your phone, and see how your choices changed your wallet and your bag.",
+      "pcm": "Your first night for Lion's Den don finish. Every choice wey you make tonight dem remember am: people wey you pay, people wey you cross, favour wey you owe.\n\nNext: M-02 New Faces (cafeteria, Amara and Nneka). Dem dey come for next build.\n\nFor now you fit waka around hostel, check your phone, and see how your choices change your wallet and your bag."
+    },
+    "button": {
+      "en": "Keep exploring",
+      "pcm": "Keep dey waka"
+    },
+    "phone": {
+      "en": "Open phone",
+      "pcm": "Open phone"
+    }
+  },
+  "cliffhanger": {
+    "from": "Unknown number",
+    "text": "Welcome to Lion's Den. Trust nobody yet."
+  },
+  "objectiveAfter": {
+    "en": "M-01 is done. M-02 New Faces comes in the next build. Explore the hostel and check your phone.",
+    "pcm": "M-01 don finish. M-02 New Faces dey come for next build. Waka around hostel and check your phone."
+  }
+}

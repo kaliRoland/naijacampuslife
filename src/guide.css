@@ -44,3 +44,6 @@ body.playing #soundBtn{top:calc(max(10px,env(safe-area-inset-top,0)) + 224px);z-
   #minimap{width:84px;height:84px;top:calc(max(10px,env(safe-area-inset-top,0)) + 62px)}
   #waypoint{bottom:calc(14px + env(safe-area-inset-bottom,0));left:auto;right:calc(max(10px,env(safe-area-inset-right,0)) + 190px);transform:none}
 }
+
+/* No on-screen stick on desktop, so the arrow label can sit at the very bottom */
+@media (pointer:fine){ #waypoint{bottom:calc(22px + env(safe-area-inset-bottom,0))} }

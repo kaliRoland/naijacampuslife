@@ -1,54 +1,49 @@
-// Dialogue engine: shows a conversation as a bottom sheet with choices (English / Pidgin).
-import { DIALOGUES } from '../data/dialogue.js';
+// Dialogue screen: shows a conversation as a bottom sheet with choices (English / Pidgin).
+// The logic lives in src/core/conversation.js (tested); this file only draws it.
+import { DIALOGUES as LEGACY } from '../data/dialogue.js';
+import M01 from '../data/missions/m01.json';
 import { KIOSK_ITEMS, PRICES } from '../data/prices.js';
-import { game, check, setLang } from './state.js';
+import { game, setLang } from './state.js';
 import { wallet, naira } from './wallet.js';
+import { createConversation } from '../core/conversation.js';
+import { apply } from '../core/state.js';
+
+// Every dialogue the game knows. New missions add their JSON file here.
+export const DIALOGUES = { ...LEGACY, ...M01.dialogues };
 
 const $ = id => document.getElementById(id);
-let current = null;      // { dlg, onClose }
-let nodeId = null;
+let conv = null, onClose = null, rollNote = '';
 
-export const isTalking = () => current !== null;
+export const isTalking = () => conv !== null;
 
-export function startDialogue(id, onClose) {
+export function startDialogue(id, done) {
   const dlg = DIALOGUES[id];
-  if (!dlg) return;
-  current = { dlg, onClose };
+  if (!dlg) return false;
+  onClose = done; rollNote = '';
+  conv = createConversation(dlg);
   $('dialogue').hidden = false;
-  go(dlg.start);
-}
-
-function end() {
-  const cb = current?.onClose;
-  current = null; $('dialogue').hidden = true;
-  cb?.();
-}
-
-function go(id) {
-  if (id === null || id === undefined) return end();
-  let node = current.dlg.nodes[id];
-  // Auto-jumps (conditions checked in order)
-  for (let guard = 0; guard < 5; guard++) {
-    const jump = node.auto?.find(a => check(a.if));
-    if (!jump) break;
-    id = jump.next; node = current.dlg.nodes[id];
-  }
-  nodeId = id;
-  if (node.set) Object.assign(game.flags, node.set);
-  if (node.give) game.inv[node.give] = true;
   render();
+  return true;
+}
+
+function close() {
+  const cb = onClose;
+  conv = null; onClose = null;
+  $('dialogue').hidden = true;
+  cb?.();
 }
 
 const price = base => Math.round(base * (game.flags.haggled ? 1 - PRICES.haggleDiscount : 1));
 
 function render() {
-  const node = current.dlg.nodes[nodeId], L = game.lang;
-  $('dlgName').textContent = node.who;
-  $('dlgText').textContent = node[L];
+  if (conv.finished) return close();
+  const L = game.lang, v = conv.view(L);
+  $('dlgName').textContent = v.who;
+  $('dlgText').textContent = (rollNote ? rollNote + '\n\n' : '') + v.text;
   $('dlgLang').textContent = L === 'pcm' ? '🇳🇬 Pidgin  ⇄  English' : '🇬🇧 English  ⇄  Pidgin';
   const box = $('dlgOpts'); box.innerHTML = '';
 
-  if (node.shop) {
+  if (v.shop) {                                                  // the (parked) supplies kiosk
     KIOSK_ITEMS.forEach(item => {
       const p = price(item.price), owned = !!game.inv[item.id] && item.required;
       const b = document.createElement('button');
@@ -58,27 +53,25 @@ function render() {
       if (!owned && wallet.balance < p) b.innerHTML += '<small>Not enough money</small>';
       b.onclick = () => {
         if (!wallet.spend(p, `${item.name} (Supplies Kiosk)`, 'supplies')) return;
-        game.inv[item.id] = item.required ? true : (game.inv[item.id] || 0) + 1;
-        document.dispatchEvent(new CustomEvent('inventory'));
+        apply(item.required ? { item: item.id, give: true } : { item: item.id, give: 1 });
         render();
       };
       box.appendChild(b);
     });
   }
 
-  (node.opts || []).filter(o => check(o.requires)).forEach(o => {
+  v.options.forEach(o => {
     const b = document.createElement('button');
     b.className = 'opt';
-    const cant = o.cost && wallet.balance < o.cost;
-    b.innerHTML = `<span>${o[L]}</span>` + (cant ? '<small>Not enough money</small>' : '');
-    b.disabled = !!cant;
+    b.innerHTML = `<span>${o.label}</span>` + (o.disabled ? `<small>${o.why}</small>` : '');
+    b.disabled = o.disabled;
     b.onclick = () => {
-      if (o.cost && !wallet.spend(o.cost, o.reason || 'Payment', o.category || 'other')) return;
-      if (o.set) Object.assign(game.flags, o.set);
-      go(o.next);
+      const r = conv.choose(o.index);
+      rollNote = r.roll ? (r.roll.passed ? '🎲 You held your nerve.' : '🎲 It did not go your way.') : '';
+      render();
     };
     box.appendChild(b);
   });
 }
 
-$('dlgLang').onclick = () => { setLang(game.lang === 'pcm' ? 'en' : 'pcm'); if (current) render(); };
+$('dlgLang').onclick = () => { setLang(game.lang === 'pcm' ? 'en' : 'pcm'); if (conv) render(); };

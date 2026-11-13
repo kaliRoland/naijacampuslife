@@ -15,24 +15,24 @@ export const TEXT = {
 // The "how to play" card shown on the first visit (and from the ? button). Edit freely.
 export const HELP = {
   title: "Welcome to Lion's Den",
-  goal: "You've just arrived at Lion's Den University in Lagos with ₦50,000 from Mummy. Your first job: register for the semester. Spend wisely, and be careful who you trust.",
+  goal: "You've just arrived at Lion's Den University in Lagos with ₦8,500, everything your family could spare. Your first night: get a safe bed before lights out at 10 pm. Spend wisely, and be careful who you trust.",
   steps: [
-    'Walk through the Main Gate.',
-    'Buy <b>passport photos</b> and <b>photocopies</b> at the <b>Supplies Kiosk</b> (🛒 on your left, just inside).',
-    'Pay the <b>registration fee</b> at the <b>Registration desk</b> (📝 on your right, under the green canopy).',
+    'Walk through the Main Gate to finish registration.',
+    'Go to <b>Hostel Block A</b> (🛏️ far left of the campus) and find <b>Room 14</b>.',
+    'Someone is on your bed. <b>Talk to people</b> (◆ above them) and decide how to get a bed. Every choice has a price.',
     'Follow the <b>gold arrow</b> and the <b>gold star on the map</b> if you get lost.',
   ],
   controlsTouch: [
     '<b>Left stick</b>: walk',
     '<b>Drag the screen</b>: look around',
-    '<b>Talk</b> button (gold, bottom right): talk to people with a ◆ above them',
-    '<b>📱</b>: your phone, wallet and bag &nbsp; <b>🗺️</b>: campus map &nbsp; <b>🎥</b>: aerial view &nbsp; <b>🔊</b>: music on/off',
+    '<b>Talk / Enter / Inspect</b> button (gold, bottom right): use what is in front of you',
+    '<b>📱</b>: phone, wallet, messages and bag &nbsp; <b>🗺️</b>: campus map &nbsp; <b>🎥</b>: aerial view &nbsp; <b>🔊</b>: music on/off',
   ],
   controlsKeys: [
     '<b>W A S D</b> or arrow keys: walk',
     '<b>Drag the mouse</b>: look around',
-    '<b>E</b>: talk to people with a ◆ above them',
-    '<b>M</b>: campus map &nbsp; <b>V</b>: aerial view &nbsp; <b>📱</b>: phone, wallet and bag &nbsp; <b>🔊</b>: music on/off',
+    '<b>E</b>: talk, enter or inspect',
+    '<b>Tab</b>: phone &nbsp; <b>M</b>: campus map &nbsp; <b>V</b>: aerial view &nbsp; <b>🔊</b>: music on/off',
   ],
   gotIt: "Let's go!",
 };

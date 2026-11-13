@@ -1,17 +1,66 @@
 {
-  "id_card": { "icon": "🪪", "name": "Student ID card" },
-  "bed_slip": { "icon": "📋", "name": "Hostel allocation slip (Block A, Room 14)" },
-  "photos": { "icon": "📸", "name": "Passport photographs (4)" },
-  "copies": { "icon": "📄", "name": "Photocopies of your documents" },
-  "pen": { "icon": "🖊️", "name": "Biro pen" },
-  "zobo": { "icon": "🥤", "name": "Cold zobo drink" },
-  "pie": { "icon": "🥧", "name": "Meat pie" },
-  "airtime": { "icon": "📶", "name": "Airtime and data" },
-  "receipt": { "icon": "🧾", "name": "Registration receipt (stamped)" },
-  "window_bunk": { "icon": "🛏️", "name": "The window bunk (Room 14)" },
-  "spare_bunk": { "icon": "🛏️", "name": "A spare bunk (from the Quiet One)" },
-  "decent_bunk": { "icon": "🛏️", "name": "A decent bunk (Room 12, from Uche)" },
-  "floor_space": { "icon": "🧺", "name": "Floor space in Chuks' room" },
-  "cramped_room": { "icon": "🏚️", "name": "A cramped room off-campus" },
-  "spare_key": { "icon": "🔑", "name": "Spare room key" }
+  "id_card": {
+    "icon": "🪪",
+    "name": "Student ID card"
+  },
+  "bed_slip": {
+    "icon": "📋",
+    "name": "Hostel allocation slip (Block A, Room 14)"
+  },
+  "photos": {
+    "icon": "📸",
+    "name": "Passport photographs (4)"
+  },
+  "copies": {
+    "icon": "📄",
+    "name": "Photocopies of your documents"
+  },
+  "pen": {
+    "icon": "🖊️",
+    "name": "Biro pen"
+  },
+  "zobo": {
+    "icon": "🥤",
+    "name": "Cold zobo drink"
+  },
+  "pie": {
+    "icon": "🥧",
+    "name": "Meat pie"
+  },
+  "airtime": {
+    "icon": "📶",
+    "name": "Airtime and data"
+  },
+  "receipt": {
+    "icon": "🧾",
+    "name": "Registration receipt (stamped)"
+  },
+  "window_bunk": {
+    "icon": "🛏️",
+    "name": "The window bunk (Room 14)"
+  },
+  "spare_bunk": {
+    "icon": "🛏️",
+    "name": "A spare bunk (from the Quiet One)"
+  },
+  "decent_bunk": {
+    "icon": "🛏️",
+    "name": "A decent bunk (Room 12, from Uche)"
+  },
+  "floor_space": {
+    "icon": "🧺",
+    "name": "Floor space in Chuks' room"
+  },
+  "cramped_room": {
+    "icon": "🏚️",
+    "name": "A cramped room off-campus"
+  },
+  "spare_key": {
+    "icon": "🔑",
+    "name": "Spare room key"
+  },
+  "corridor_floor": {
+    "icon": "🧱",
+    "name": "A spot on the corridor floor (no bed)"
+  }
 }

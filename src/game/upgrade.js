@@ -138,6 +138,7 @@ async function buildings(world) {
     // Collision follows the real model
     const foot = { minX: b.x - size.x / 2, maxX: b.x + size.x / 2, minZ: b.z - size.z / 2, maxZ: b.z + size.z / 2 };
     world.colliders.push(foot); world.occluders.push({ ...foot, minY: 0, maxY: size.y });
+    if (b.id === 'hostel') { world.hostelDoor.x = b.x; world.hostelDoor.z = foot.maxZ + 1.6; }   // the door moves with the real model
   }
 }
 

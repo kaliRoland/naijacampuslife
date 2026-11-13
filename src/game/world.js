@@ -90,7 +90,7 @@ const ironGate = (x, z, w, parent) => {                    // sliding iron gate 
 export function buildWorld(scene) {
   scene.background = new THREE.Color(0x9fd3f0);
   scene.fog = new THREE.Fog(0x9fd3f0, 45, 120);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x6b7f5b, 1.7));
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x6b7f5b, 1.7); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff2cc, 1.5); sun.position.set(30, 50, 20); scene.add(sun);
 
   const g = new THREE.Group(); scene.add(g);
@@ -204,5 +204,8 @@ export function buildWorld(scene) {
   bus.position.set(-90, 0, 27);
 
   bus.userData.collide = { minX: -5.2, maxX: 7.8, halfZ: 2.4 };   // replaced when the real model loads
-  return { bus, colliders, occluders, buildingList, treeSpots, flowerSpots, treesG, flowersG, awningG, group: g };
+  // where you stand to enter Hostel Block A (moved to the real model's front once it loads)
+  const hb = buildingList.find(b => b.id === 'hostel');
+  const hostelDoor = { x: hb.x, z: hb.z + hb.d / 2 + 1.6 };
+  return { hemi, sun, hostelDoor, bus, colliders, occluders, buildingList, treeSpots, flowerSpots, treesG, flowersG, awningG, group: g };
 }

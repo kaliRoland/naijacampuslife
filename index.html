@@ -20,7 +20,7 @@
 <canvas id="game"></canvas>
 
 <div id="hud">
-  <div id="objective"></div>
+  <div id="objective"><small id="clock"></small><span id="objText"></span></div>
   <button id="phoneBtn" aria-label="Open phone">📱<span id="badge" hidden>1</span></button>
 </div>
 
@@ -50,6 +50,8 @@
 <div id="stick" hidden><div id="knob"></div></div>
 
 <div id="toast" hidden></div>
+
+<div id="fade" hidden><h2 id="fadeTitle"></h2><p id="fadeText"></p></div>
 
 <div id="phone" hidden>
   <div class="phone-head"><b>Phone</b><button id="phoneClose">✕</button></div>

@@ -45,3 +45,13 @@
 .msg-from{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;font-size:14px}
 .msg-from small{font-weight:400;color:#8fa296;font-size:12px}
 .msg-text{margin-top:6px;font-size:15px;line-height:1.4}
+
+/* ---------- Clock line in the objective box, fade screen, multi-line dialogue ---------- */
+#clock{display:block;font-size:12px;font-weight:700;color:#f2c94c;margin-bottom:3px;letter-spacing:.02em}
+#dlgText{white-space:pre-line}
+#choiceText,#choiceResult{white-space:pre-line}
+#fade{position:fixed;inset:0;z-index:35;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center;animation:fadein .8s ease-out}
+#fade[hidden]{display:none}
+#fade h2{margin:0 0 14px;color:#f2c94c;font:700 30px Georgia,serif}
+#fade p{margin:0;max-width:420px;color:#dfe7e1;font-size:17px;line-height:1.5}
+@keyframes fadein{from{opacity:0}to{opacity:1}}

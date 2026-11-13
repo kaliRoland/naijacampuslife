@@ -67,6 +67,7 @@ export function createNPCs(scene) {
 export function updateNPCs(dt, t) {
   for (const n of people) {
     const o = n.obj;
+    if (!o.visible) continue;                          // people in another place are not simulated
     if (n.kind === 'idle') { animateIdle(o, t, dt); continue; }
     const target = n.route[n.leg + n.dir] ?? n.route[n.leg];
     const dx = target[0] - o.position.x, dz = target[1] - o.position.z, d = Math.hypot(dx, dz);

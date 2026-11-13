@@ -288,7 +288,10 @@
           "who": "Your bed",
           "en": "Your bed for tonight. It was not free, one way or another.",
           "pcm": "Your bed for tonight. E no free, one way or another.",
-          "opts": [ { "en": "Good enough.", "pcm": "E don do.", "next": null } ]
+          "opts": [
+            { "en": "Go to sleep (lights out)", "pcm": "Go sleep (lights out)", "effects": [ { "event": "m01:sleep" } ], "next": null },
+            { "en": "Not yet.", "pcm": "Not yet.", "next": null }
+          ]
         }
       }
     },
