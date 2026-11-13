@@ -21,6 +21,7 @@ export function newState() {
     relations: {},                       // character id -> { trust, fear, affection, obligation }
     health: { health: 100, stress: 0 },
     missions: {},                        // 'M-01' -> 'active' | 'done'
+    messages: [],                        // phone messages, oldest first: { id, from, text, day, minutes, read }
     choiceLog: [],                       // every important choice, oldest first
     scheduled: [],                       // delayed effects waiting for their day or condition
     nextId: 1,
@@ -65,6 +66,7 @@ export function check(c, st = S) {
 //   { rel:"killer", stat:"trust", add:-5 }                  relationships
 //   { health:-10 } { stress:+5 }
 //   { mission:"M-01", status:"active" }
+//   { message:{ from:"Unknown number", text:"..." } }       a phone message arrives
 //   { schedule:{ afterDays:3, effects:[...] } }             delayed effect (day count)
 //   { schedule:{ when:{cond}, effects:[...] } }             delayed effect (waits for a condition)
 //   { event:"killer:angry", data:{...} }                    announce something to other modules
@@ -95,6 +97,10 @@ export function apply(e) {
   if (e.health !== undefined) S.health.health = clamp(S.health.health + e.health, 0, 100);
   if (e.stress !== undefined) S.health.stress = clamp(S.health.stress + e.stress, 0, 100);
   if (e.mission) { S.missions[e.mission] = e.status || 'active'; emit('mission:changed', { id: e.mission, status: S.missions[e.mission] }); }
+  if (e.message) {
+    const m = { id: S.nextId++, from: e.message.from, text: e.message.text, day: S.time.day, minutes: S.time.minutes, read: false };
+    S.messages.push(m); emit('message:received', m);
+  }
   if (e.schedule) schedule(e.schedule);
   if (e.event) emit(e.event, e.data);
 }

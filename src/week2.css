@@ -36,3 +36,12 @@
 .opt small{color:#ffb4a8;font-size:12px}
 .opt.shop{flex-direction:row;justify-content:space-between;align-items:center;flex-wrap:wrap}
 .opt.shop b{color:#f2c94c}.opt.owned b{color:#4cd964}
+
+/* ---------- Phone: messages and clock ---------- */
+.clock-line{display:block;margin-top:6px;color:#a9c2b3;font-size:12px}
+.tabs .dot{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:#e53935;color:#fff;font-size:12px;line-height:18px;margin-left:4px}
+.msg{padding:12px 14px;margin-bottom:8px;border-radius:12px;background:#14211b}
+.msg.new{border:1px solid #f2c94c}
+.msg-from{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;font-size:14px}
+.msg-from small{font-weight:400;color:#8fa296;font-size:12px}
+.msg-text{margin-top:6px;font-size:15px;line-height:1.4}

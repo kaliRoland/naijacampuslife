@@ -73,6 +73,15 @@ test('conditions: var, cash, flags, any, all, not, mission', () => {
   assert.ok(check(undefined));
 });
 
+test('phone messages arrive with a time stamp and are announced', () => {
+  const heard = [];
+  on('message:received', m => heard.push(m));
+  apply({ message: { from: 'Unknown number', text: "Welcome to Lion's Den. Trust nobody yet." } });
+  assert.equal(getState().messages.length, 1);
+  assert.equal(getState().messages[0].read, false);
+  assert.equal(heard[0].from, 'Unknown number');
+});
+
 // ------------------------------------------------------------------ choices and delayed effects
 test('a choice applies immediate and hidden effects, feeds the Slide, and is logged', () => {
   const made = [];

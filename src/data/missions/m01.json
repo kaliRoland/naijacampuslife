@@ -1,0 +1,314 @@
+{
+  "id": "M-01",
+  "title": "The Bed",
+  "objective": {
+    "start": { "en": "Find Hostel Block A (far left of campus) and get a safe place to sleep before lights out at 10 pm.", "pcm": "Find Hostel Block A (far left for campus) and get safe place to sleep before lights out by 10 pm." },
+    "inside": { "en": "Someone is on your bed. Talk to people and decide how to get a bed tonight.", "pcm": "Person dey your bed. Talk to people and decide how you go get bed tonight." },
+    "resolved": { "en": "You sorted out a bed. Rest before lights out.", "pcm": "You don sort bed. Rest before lights out." }
+  },
+  "dialogues": {
+
+    "m01_killer": {
+      "id": "m01_killer", "start": "k_start",
+      "nodes": {
+        "k_start": {
+          "who": "Killer",
+          "auto": [
+            { "if": { "flag": "m01_resolved" }, "next": "k_after" }
+          ],
+          "en": "New face. Nobody knows you. If you want peace in this hostel, you must learn how things work.",
+          "pcm": "New face. Nobody know you. If you want peace for this hostel, you must learn how tins dey work.",
+          "opts": [
+            { "en": "Good evening, boss. I just want a place to sleep. How can we settle this?", "pcm": "Good evening oga. I just want place to sleep. How we fit settle am?", "next": "k_negotiate" },
+            { "en": "That is my bed. Tell your people to move their things.", "pcm": "Na my bed be that. Tell your people make dem move their load.",
+              "choice": { "id": "M01_bed", "mission": "M-01", "option": "challenge", "who": ["killer"], "hidden": [ { "var": "bold", "add": 1 }, { "var": "discipline_risk", "add": 1 } ] },
+              "roll": { "chance": 0.35, "bonusVar": "bold", "per": 0.1,
+                "pass": { "next": "k_challenge_pass", "effects": [ { "flag": "m01_resolved" }, { "flag": "m01_out_challenge_pass" }, { "rel": "killer", "stat": "fear", "add": 10 }, { "schedule": { "afterDays": 2, "effects": [ { "var": "killer_grudge", "add": 1 }, { "message": { "from": "Quiet One", "text": "Killer has been asking about you. He is not happy. Stay close to people." } } ] } } ] },
+                "fail": { "next": "k_challenge_fail", "effects": [ { "flag": "m01_resolved" }, { "flag": "m01_out_challenge_fail" }, { "health": -10 }, { "stress": 8 }, { "cash": -1000, "reason": "Spare bunk (Quiet One)", "category": "fees" }, { "item": "spare_bunk", "give": true }, { "flag": "fight_record" }, { "schedule": { "afterDays": 2, "effects": [ { "rel": "killer", "stat": "fear", "add": -5 }, { "message": { "from": "Quiet One", "text": "People are talking about how you got shoved. Fear is a currency here. Lie low for now." } } ] } } ] } } },
+            { "en": "Who are you, anyway?", "pcm": "Who be you sef?", "next": "k_info" },
+            { "en": "Let me look around first.", "pcm": "Make I look around first.", "next": null }
+          ]
+        },
+        "k_info": {
+          "who": "Killer",
+          "en": "Me? I am the one who keeps this corridor peaceful. Ask anybody. Those who respect me sleep well. Those who do not... also sleep, just somewhere else.",
+          "pcm": "Me? Na me dey keep this corridor for peace. Ask anybody. Wey respect me dey sleep well. Wey no respect me... dem go sleep too, just for another place.",
+          "opts": [
+            { "en": "Okay. Let us talk about the bed.", "pcm": "Okay. Make we talk about the bed.", "next": "k_negotiate" },
+            { "en": "I will think about it.", "pcm": "I go think am.", "next": null }
+          ]
+        },
+        "k_negotiate": {
+          "who": "Killer",
+          "en": "Good, you have manners. There is a window bunk. Welcome fee is ₦2,000. Small thing. After that, nobody touches your bag.",
+          "pcm": "Good, you get manners. Window bunk dey. Welcome fee na ₦2,000. Small thing. After that, nobody go touch your bag.",
+          "opts": [
+            { "en": "Pay ₦2,000", "pcm": "Pay ₦2,000", "cost": 2000, "reason": "Welcome fee (Killer)", "category": "fees", "next": "k_negotiate_done",
+              "choice": { "id": "M01_bed", "mission": "M-01", "option": "negotiate", "who": ["killer"],
+                "hidden": [ { "var": "killer_respect", "add": 1 }, { "var": "leverage", "add": 1 } ],
+                "delayed": [ { "afterDays": 3, "effects": [ { "var": "respect_asks", "add": 1 }, { "message": { "from": "Unknown number", "text": "Oga Killer say small something for the hostel. ₦500. Bring am tomorrow." } } ] } ] },
+              "effects": [ { "flag": "m01_resolved" }, { "flag": "m01_out_negotiate" }, { "item": "window_bunk", "give": true } ] },
+            { "en": "That is too much. Let me think.", "pcm": "That one too much. Make I think.", "next": null }
+          ]
+        },
+        "k_negotiate_done": {
+          "who": "Killer",
+          "en": "Wise boy. Take the window bunk. Remember who made your night easy.",
+          "pcm": "Wise boy. Take the window bunk. Remember who make your night easy.",
+          "opts": [ { "en": "Thank you, boss.", "pcm": "Thank you oga.", "next": null } ]
+        },
+        "k_challenge_pass": {
+          "who": "Killer",
+          "en": "...Okay, okay. Small boy with mouth. Take your bed. But I do not forget.",
+          "pcm": "...Okay, okay. Small boy get mouth. Take your bed. But I no dey forget.",
+          "opts": [ { "en": "(Say nothing. Pick up your bag.)", "pcm": "(No talk. Carry your bag.)", "next": null } ]
+        },
+        "k_challenge_fail": {
+          "who": "Killer",
+          "en": "*shoves you into the wall* You want to show me? Go and sit down. The Quiet One will find you somewhere to lie. Next time, I will not be this kind.",
+          "pcm": "*push you enter wall* You wan show me? Go sit down. Quiet One go find you place to lie. Next time, I no go too kind like this.",
+          "opts": [ { "en": "(Hold your arm. The Quiet One gives you a spare bunk for ₦1,000.)", "pcm": "(Hold your hand. Quiet One give you spare bunk for ₦1,000.)", "next": null } ]
+        },
+        "k_after": {
+          "who": "Killer",
+          "auto": [
+            { "if": { "var": ["snitch", ">=", 1] }, "next": "k_after_snitch" },
+            { "if": { "flag": "m01_out_challenge_pass" }, "next": "k_after_bold" },
+            { "if": { "flag": "m01_out_challenge_fail" }, "next": "k_after_fail" }
+          ],
+          "en": "We are good, new face. Sleep well. Remember who keeps the peace here.",
+          "pcm": "We good, new face. Sleep well. Remember who dey keep peace for here.",
+          "opts": [ { "en": "Goodnight.", "pcm": "Goodnight.", "next": null } ]
+        },
+        "k_after_snitch": {
+          "who": "Killer",
+          "en": "So you are the one who went to the warden. Mm. I will remember your face.",
+          "pcm": "So na you go warden. Mm. I go remember your face.",
+          "opts": [ { "en": "(Look away.)", "pcm": "(Look another side.)", "next": null } ]
+        },
+        "k_after_bold": {
+          "who": "Killer",
+          "en": "You again. You have mouth, I will give you that.",
+          "pcm": "You again. You get mouth, I go give you that one.",
+          "opts": [ { "en": "(Nod and keep walking.)", "pcm": "(Nod and dey waka.)", "next": null } ]
+        },
+        "k_after_fail": {
+          "who": "Killer",
+          "en": "Still hurting? Next time, think before you talk.",
+          "pcm": "E still dey pain you? Next time, think before you talk.",
+          "opts": [ { "en": "(Say nothing.)", "pcm": "(No talk.)", "next": null } ]
+        }
+      }
+    },
+
+    "m01_quiet": {
+      "id": "m01_quiet", "start": "q_start",
+      "nodes": {
+        "q_start": {
+          "who": "The Quiet One (roommate)",
+          "auto": [ { "if": { "flag": "m01_resolved" }, "next": "q_after" } ],
+          "en": "*whispering* Just don't argue. Not in front of his people.",
+          "pcm": "*whisper* Just no argue. No for front of his people.",
+          "opts": [
+            { "en": "What can I do about the bed?", "pcm": "Wetin I fit do about the bed?", "next": "q_help" },
+            { "en": "Who is Killer?", "pcm": "Who be Killer?", "next": "q_killer" },
+            { "en": "Thanks.", "pcm": "Thank you.", "next": null }
+          ]
+        },
+        "q_help": {
+          "who": "The Quiet One (roommate)",
+          "en": "You have a few ways. You can talk to Killer by the door, or tell the warden in his office. Uche, down the corridor, sells a decent bed. Chuks next door sometimes lets people sleep on his floor. Or you can look for a room outside the campus. Everything costs something.",
+          "pcm": "You get small ways. You fit talk to Killer for door, or tell warden for him office. Uche, down the corridor, dey sell better bed. Chuks next door sometimes dey let people sleep for him floor. Or you fit go look room outside campus. Everything get price.",
+          "opts": [ { "en": "Okay. Thank you.", "pcm": "Okay. Thank you.", "next": null } ]
+        },
+        "q_killer": {
+          "who": "The Quiet One (roommate)",
+          "en": "He collects 'respect' from every newcomer. Everybody pays something. Some people pay with money. Some people pay later, with more.",
+          "pcm": "Him dey collect 'respect' from every newcomer. Everybody dey pay something. Some people pay with money. Some people pay later, with pass.",
+          "opts": [ { "en": "Okay.", "pcm": "Okay.", "next": "q_start" } ]
+        },
+        "q_after": {
+          "who": "The Quiet One (roommate)",
+          "en": "*quietly* Lights out soon. Get some sleep. Things look different in the morning.",
+          "pcm": "*quiet* Lights out go soon. Sleep small. Things dey look different for morning.",
+          "opts": [ { "en": "Goodnight.", "pcm": "Goodnight.", "next": null } ]
+        }
+      }
+    },
+
+    "m01_warden": {
+      "id": "m01_warden", "start": "w_start",
+      "nodes": {
+        "w_start": {
+          "who": "Warden Bassey",
+          "auto": [ { "if": { "flag": "m01_resolved" }, "next": "w_after" } ],
+          "en": "Yes? Rules are simple. Lights out at ten. No noise after. Who are you?",
+          "pcm": "Yes? Rules simple. Lights out by ten. No noise after. Who be you?",
+          "opts": [
+            { "en": "Someone is on my bed. Killer and his people.", "pcm": "Person dey my bed. Killer and him people.", "next": "w_report" },
+            { "en": "What are the hostel rules?", "pcm": "Wetin be the hostel rules?", "next": "w_rules" },
+            { "en": "Sorry to disturb you, sir.", "pcm": "Sorry for disturbance sir.", "next": null }
+          ]
+        },
+        "w_rules": {
+          "who": "Warden Bassey",
+          "en": "No cooking in rooms. No visitors after nine. No fighting. I do not want to hear who started it. If I hear it, you both go.",
+          "pcm": "No cooking for room. No visitor after nine. No fighting. I no wan hear who start am. If I hear am, una two go comot.",
+          "opts": [ { "en": "Understood.", "pcm": "I don hear.", "next": "w_start" } ]
+        },
+        "w_report": {
+          "who": "Warden Bassey",
+          "en": "Killer again. I will send a boy to clear the bed. But I did not hear this from you. And keep your voice down in my hostel.",
+          "pcm": "Killer again. I go send one boy make e clear the bed. But I no hear am from you. And keep your mouth low for my hostel.",
+          "opts": [
+            { "en": "Thank you, sir.", "pcm": "Thank you sir.", "next": null,
+              "choice": { "id": "M01_bed", "mission": "M-01", "option": "report_warden", "who": ["warden", "killer"],
+                "hidden": [ { "var": "snitch", "add": 1 }, { "var": "killer_grudge", "add": 2 } ],
+                "delayed": [ { "afterDays": 1, "effects": [ { "var": "snitch_label", "add": 1 }, { "message": { "from": "The Quiet One", "text": "They are calling you a snitch in Block A. Be careful who you sit with." } } ] } ] },
+              "effects": [ { "flag": "m01_resolved" }, { "flag": "m01_out_report" }, { "item": "window_bunk", "give": true } ] },
+            { "en": "Actually, never mind.", "pcm": "Actually, no mind.", "next": null }
+          ]
+        },
+        "w_after": {
+          "who": "Warden Bassey",
+          "en": "Your bed is sorted? Good. Lights out at ten. Do not give me problems.",
+          "pcm": "Your bed don sort? Good. Lights out by ten. No give me wahala.",
+          "opts": [ { "en": "Yes, sir.", "pcm": "Yes sir.", "next": null } ]
+        }
+      }
+    },
+
+    "m01_uche": {
+      "id": "m01_uche", "start": "u_start",
+      "nodes": {
+        "u_start": {
+          "who": "Uche (neighbour, Room 12)",
+          "auto": [ { "if": { "flag": "m01_resolved" }, "next": "u_after" } ],
+          "en": "*low voice* Psst. New guy? Killer has spoiled your bed plans. I have a decent bunk in my room, Room 12. ₦3,500 and it is yours.",
+          "pcm": "*low voice* Psst. New guy? Killer don spoil your bed plan. I get better bunk for my room, Room 12. ₦3,500 and na your own.",
+          "opts": [
+            { "en": "Pay ₦3,500", "pcm": "Pay ₦3,500", "cost": 3500, "reason": "Bunk fee (Uche)", "category": "fees", "next": "u_done",
+              "choice": { "id": "M01_bed", "mission": "M-01", "option": "pay_student", "who": ["uche"],
+                "hidden": [ { "var": "seller_ally", "add": 1 } ],
+                "delayed": [ { "afterDays": 2, "effects": [ { "var": "uche_remembers", "add": 1 }, { "message": { "from": "Uche", "text": "Hope the bunk is comfortable? Remember who helped you when you needed it." } } ] } ] },
+              "effects": [ { "flag": "m01_resolved" }, { "flag": "m01_out_pay_student" }, { "item": "decent_bunk", "give": true } ] },
+            { "en": "How do I know you are not a thief?", "pcm": "How I go take know say you no be thief?", "next": "u_trust" },
+            { "en": "No, thanks.", "pcm": "No thanks.", "next": null }
+          ]
+        },
+        "u_trust": {
+          "who": "Uche (neighbour, Room 12)",
+          "en": "You don't. That is life, my guy. But ask anybody in Block A who Uche is. Fair price, fair bed. No wahala.",
+          "pcm": "You no go know. Na so life be, my guy. But ask anybody for Block A who be Uche. Fair price, fair bed. No wahala.",
+          "opts": [ { "en": "Let me think.", "pcm": "Make I think.", "next": "u_start" } ]
+        },
+        "u_done": {
+          "who": "Uche (neighbour, Room 12)",
+          "en": "Pleasure doing business. Bunk by the window in Room 12. Do not forget me.",
+          "pcm": "Pleasure to do business. Bunk by window for Room 12. No forget me.",
+          "opts": [ { "en": "Thanks.", "pcm": "Thanks.", "next": null } ]
+        },
+        "u_after": {
+          "who": "Uche (neighbour, Room 12)",
+          "auto": [ { "if": { "flag": "m01_out_pay_student" }, "next": "u_after_buyer" } ],
+          "en": "Sorted your bed? Good. Sleep well, fresher.",
+          "pcm": "You don sort bed? Good. Sleep well, fresher.",
+          "opts": [ { "en": "Goodnight.", "pcm": "Goodnight.", "next": null } ]
+        },
+        "u_after_buyer": {
+          "who": "Uche (neighbour, Room 12)",
+          "en": "My customer! Anything you need, you know where I am.",
+          "pcm": "My customer! Anything you need, you know where I dey.",
+          "opts": [ { "en": "Thanks.", "pcm": "Thanks.", "next": null } ]
+        }
+      }
+    },
+
+    "m01_chuks": {
+      "id": "m01_chuks", "start": "c_start",
+      "nodes": {
+        "c_start": {
+          "who": "Chuks (neighbour, Room 15)",
+          "auto": [ { "if": { "flag": "m01_resolved" }, "next": "c_after" } ],
+          "en": "Ah, fresher! Trouble in your room, abi? You can sleep on my floor tonight. Free. No wahala. Just a small favour from you later.",
+          "pcm": "Ah, fresher! Wahala for your room, abi? You fit sleep for my floor tonight. Free. No wahala. Na only small favour I go ask later.",
+          "opts": [
+            { "en": "Accept his offer", "pcm": "Accept him offer", "next": "c_done",
+              "choice": { "id": "M01_bed", "mission": "M-01", "option": "sleep_elsewhere", "who": ["chuks"], "compromise": 5,
+                "hidden": [ { "var": "pride_contact", "add": 1 }, { "rel": "chuks", "stat": "obligation", "add": 20 } ],
+                "delayed": [ { "afterDays": 4, "effects": [ { "var": "favour_called", "add": 1 }, { "message": { "from": "Chuks", "text": "Remember that favour? Come and see me when you are free. Small thing." } } ] } ] },
+              "effects": [ { "flag": "m01_resolved" }, { "flag": "m01_out_other_room" }, { "item": "floor_space", "give": true } ] },
+            { "en": "What kind of favour?", "pcm": "Which kain favour?", "next": "c_favour" },
+            { "en": "No, thank you.", "pcm": "No thank you.", "next": null }
+          ]
+        },
+        "c_favour": {
+          "who": "Chuks (neighbour, Room 15)",
+          "en": "Just small, small. Nothing you cannot do. You will see. We look after each other here.",
+          "pcm": "Just small small. Nothing wey you no fit do. You go see. We dey look after each other for here.",
+          "opts": [
+            { "en": "Let me think about it.", "pcm": "Make I think about am.", "next": "c_start" }
+          ]
+        },
+        "c_done": {
+          "who": "Chuks (neighbour, Room 15)",
+          "en": "Welcome to the family. Floor is yours tonight. We will talk soon.",
+          "pcm": "Welcome to the family. Floor na your own tonight. We go talk soon.",
+          "opts": [ { "en": "Thanks.", "pcm": "Thanks.", "next": null } ]
+        },
+        "c_after": {
+          "who": "Chuks (neighbour, Room 15)",
+          "en": "Sleep well, fresher. We will talk tomorrow.",
+          "pcm": "Sleep well, fresher. We go talk tomorrow.",
+          "opts": [ { "en": "Goodnight.", "pcm": "Goodnight.", "next": null } ]
+        }
+      }
+    },
+
+    "m01_bed": {
+      "id": "m01_bed", "start": "b_start",
+      "nodes": {
+        "b_start": {
+          "who": "Bed 3, Room 14",
+          "auto": [ { "if": { "flag": "m01_resolved" }, "next": "b_after" } ],
+          "en": "A stranger's duffel bag sits on your assigned bed, the one by the window. Across the room, Killer and two friends watch you.",
+          "pcm": "Stranger duffel bag dey your assigned bed, the one by window. For other side, Killer and him two friends dey look you.",
+          "opts": [
+            { "en": "Read the allocation slip", "pcm": "Read the allocation slip", "next": "b_slip" },
+            { "en": "Leave it for now", "pcm": "Leave am for now", "next": null }
+          ]
+        },
+        "b_slip": {
+          "who": "Allocation slip",
+          "en": "BLOCK A, ROOM 14, BED 3 (WINDOW). Allocated to: T. ADEYEMI. Lights out 10:00 pm.",
+          "pcm": "BLOCK A, ROOM 14, BED 3 (WINDOW). Allocated to: T. ADEYEMI. Lights out 10:00 pm.",
+          "opts": [ { "en": "It is definitely my bed.", "pcm": "Na my bed be this o.", "next": null } ]
+        },
+        "b_after": {
+          "who": "Your bed",
+          "en": "Your bed for tonight. It was not free, one way or another.",
+          "pcm": "Your bed for tonight. E no free, one way or another.",
+          "opts": [ { "en": "Good enough.", "pcm": "E don do.", "next": null } ]
+        }
+      }
+    },
+
+    "m01_exit": {
+      "id": "m01_exit", "start": "x_start",
+      "nodes": {
+        "x_start": {
+          "who": "Hostel door",
+          "en": "It is getting late. You could leave now and look for a cheap room outside the campus tonight. It will cost money and it will not be comfortable.",
+          "pcm": "E don dey late. You fit comot now and go look cheap room outside campus tonight. E go cost money and e no go comfortable.",
+          "opts": [
+            { "en": "Search for a room off-campus (₦3,000)", "pcm": "Go search room outside campus (₦3,000)", "cost": 3000, "reason": "Cramped room (off-campus)", "category": "fees", "next": null,
+              "choice": { "id": "M01_bed", "mission": "M-01", "option": "search_off_campus", "who": [],
+                "hidden": [ { "var": "hostel_exposure", "add": -1 } ] },
+              "effects": [ { "flag": "m01_resolved" }, { "flag": "m01_out_off_campus" }, { "item": "cramped_room", "give": true } ] },
+            { "en": "Stay and sort it out here", "pcm": "Stay and sort am for here", "next": null }
+          ]
+        }
+      }
+    }
+  }
+}
