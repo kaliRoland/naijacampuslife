@@ -51,3 +51,12 @@ kiosk, registration canopy, fountain, benches, lamps, signs.
 | public/audio/background-music.m4a (from "backround music.m4a" in the project root) | Supplied by Roland. The file's embedded provenance data says it was generated with Suno (Suno, Inc., model chirp-hawk-t1, created 2026-10-21) and marks it as AI-generated audio. | **TO CONFIRM before public launch:** Suno only grants commercial-use rights for songs made on a paid plan. Roland must confirm which plan was active on 2026-10-21 and keep the Suno song link / receipt. If it was a free plan, replace this track with a CC0 or properly licensed one. |
 
 The music starts when the player taps Start, loops, and can be switched off with the speaker button. Volume is set in `src/game/audio.js`.
+
+## Art pipeline notes (moved here from the old CLAUDE.md)
+
+- Format: GLB loaded through `src/game/assets.js`, compressed with meshopt (`npm run models`, which reads `scripts/models.json`). Textures 1024px or smaller.
+- Raw downloaded packs live in `art-source/` (git-ignored). Only optimised files go in `public/models/`.
+- Budget: characters a few thousand triangles at most, props much less. Reuse and instance repeated models (`instanceModel()`).
+- If a model fails to load, the simple built-in shape stays, so the game never breaks. The landing page shows loading progress.
+- Check build size, draw calls and frame rate (add `?debug` to the address) before calling art work done.
+- Signs are our own text banners; no real brand names or logos on any model or texture.
